@@ -1,0 +1,36 @@
+{
+  "name": "document-management-system",
+  "version": "1.0.0",
+  "description": "A document management system offering roles and access restrictions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andela-obanwo/Document-Management-System.git"
+  },
+  "author": "Oreoluwa Banwo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andela-obanwo/Document-Management-System/issues"
+  },
+  "homepage": "https://github.com/andela-obanwo/Document-Management-System#readme",
+  "devDependencies": {
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^6.9.0",
+    "express": "^4.14.0",
+    "mocha": "^3.2.0",
+    "sequelize-cli": "^2.5.1",
+    "webpack": "^1.14.0"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "mysql": "^2.13.0",
+    "pg": "^6.1.2",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.30.1"
+  }
+}
