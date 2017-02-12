@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    ownerId: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -16,24 +16,32 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    docTypeID: {
+    docTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    departmentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
         Documents.belongsTo(models.Users, {
-          foreignKey: 'ownerId',
+          foreignKey: 'userId',
           onDelete: 'CASCADE'
         });
-        Documents.belongsTo(models.DocumentType, {
-          foreignKey: 'docTypeID',
+        Documents.belongsTo(models.DocumentTypes, {
+          foreignKey: 'docTypeId',
           onDelete: 'CASCADE'
         });
-        Documents.belongsTo(models.AccessType, {
-          foreignKey: 'accessTypeID',
+        Documents.belongsTo(models.AccessTypes, {
+          foreignKey: 'accessTypeId',
+          onDelete: 'CASCADE'
+        });
+        Documents.belongsTo(models.Departments, {
+          foreignKey: 'departmentId',
           onDelete: 'CASCADE'
         });
       }

@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      ownerId: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -35,11 +35,21 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      docTypeID: {
+      docTypeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'DocumentTypes',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      departmentId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Departments',
           key: 'id'
         },
         onUpdate: 'CASCADE',

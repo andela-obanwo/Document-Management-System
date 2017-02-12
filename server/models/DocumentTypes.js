@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const DocumentType = sequelize.define('DocumentType', {
+  const DocumentTypes = sequelize.define('DocumentTypes', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
-        DocumentType.hasMany(models.Documents, {
-          foreignKey: 'docTypeID',
+        DocumentTypes.hasMany(models.Documents, {
+          foreignKey: 'docTypeId',
           onDelete: 'CASCADE'
         });
       }
     }
   });
-  return DocumentType;
+  return DocumentTypes;
 };

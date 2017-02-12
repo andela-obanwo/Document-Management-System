@@ -10,7 +10,11 @@ module.exports = (sequelize, DataTypes) => {
       associate: (models) => {
         // associations can be defined here
         Departments.hasMany(models.Users, {
-          foreignKey: 'departmentID',
+          foreignKey: 'departmentId',
+          onDelete: 'CASCADE'
+        });
+        Departments.hasMany(models.Documents, {
+          foreignKey: 'departmentId',
           onDelete: 'CASCADE'
         });
       }

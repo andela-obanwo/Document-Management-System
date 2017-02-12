@@ -41,15 +41,15 @@ module.exports = (sequelize, DataTypes) => {
         // associations defined here
         Users.belongsTo(models.Roles, {
           onDelete: 'CASCADE',
-          foreignKey: 'roleID'
+          foreignKey: 'roleId'
         });
         Users.belongsTo(models.Departments, {
           onDelete: 'CASCADE',
-          foreignKey: 'roleID'
+          foreignKey: 'departmentId'
         });
 
         Users.hasMany(models.Documents, {
-          foreignKey: 'ownerId',
+          foreignKey: 'userId',
           onDelete: 'CASCADE'
         });
       }
