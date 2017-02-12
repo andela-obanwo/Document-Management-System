@@ -210,6 +210,36 @@ const DocumentsController = {
     })
     .then(documents => res.status(200).send(documents))
     .catch(err => res.status(400).send(err));
+  },
+  searchDocuments(req, res) {
+    db.Documents.findAll({
+      where: {
+        $or: [
+          {
+            title: {
+              $iLike: `%${req.params.searchQuery}%`
+            }
+          },
+          {
+            title: {
+              $iLike: `%${req.params.searchQuery}`
+            }
+          },
+          {
+            title: {
+              $iLike: `${req.params.searchQuery}%`
+            }
+          }
+        ]
+      }
+    })
+    .then((documents) => {
+      if (!documents) {
+        return res.send({ message: 'No Documents matching search found' });
+      }
+      return res.send(documents);
+    })
+    .catch(err => res.status(400).send(err));
   }
 };
 
