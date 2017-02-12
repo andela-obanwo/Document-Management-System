@@ -28,6 +28,7 @@ module.exports = {
       accessTypeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 1,
         references: {
           model: 'AccessTypes',
           key: 'id'
@@ -65,7 +66,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
+  down(queryInterface/* , Sequelize*/) {
     return queryInterface.dropTable('Documents');
   }
 };

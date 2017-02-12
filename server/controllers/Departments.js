@@ -44,7 +44,8 @@ const DepartmentsController = {
         db.Departments.create(req.body)
         .then((department) => {
           res.status(201).send({
-            message: `Department ${req.body.name} successfully created`, department
+            message: `Department ${req.body.name} successfully created`,
+            department
           });
         })
         .catch((err) => {

@@ -1,12 +1,13 @@
 import Authentication from '../middleware/Authentication';
 
 const router = require('express').Router();
-
+const DocumentsController = require('../controllers/Documents');
 const UsersController = require('../controllers/Users');
 // const DocumentsController = require('../../app/controllers/documents');
 
 router.route('/')
-.get(Authentication.verifyToken, Authentication.verifyAdmin, UsersController.fetchAll)
+.get(Authentication.verifyToken, Authentication.verifyAdmin,
+  UsersController.fetchAll)
 .post(UsersController.create);
 
 router.route('/:id')
@@ -14,7 +15,8 @@ router.route('/:id')
 .put(Authentication.verifyToken, UsersController.edit)
 .delete(Authentication.verifyToken, UsersController.destroy);
 
-// router.get('/:id/documents', Authentication.verifyToken, DocumentsController.userDocuments);
+router.get('/:id/documents', Authentication.verifyToken,
+  DocumentsController.fetchUserDocuments);
 
 router.post('/login', UsersController.login);
 router.post('/logout', UsersController.logout);

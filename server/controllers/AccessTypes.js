@@ -44,7 +44,8 @@ const AccessTypesController = {
         db.AccessTypes.create(req.body)
         .then((accessType) => {
           res.status(201).send({
-            message: `AccessType ${req.body.name} successfully created`, accessType
+            message: `AccessType ${req.body.name} successfully created`,
+            accessType
           });
         })
         .catch((err) => {

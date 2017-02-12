@@ -35,6 +35,7 @@ module.exports = {
       roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 3,
         references: {
           model: 'Roles',
           key: 'id'
@@ -62,7 +63,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
+  down(queryInterface/* , Sequelize*/) {
     return queryInterface.dropTable('Users');
   }
 };

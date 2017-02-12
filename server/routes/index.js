@@ -1,11 +1,9 @@
 const users = require('./Users');
-const roles = require('./Roles')
+const roles = require('./Roles');
 const documentTypes = require('./DocumentTypes');
 const accessTypes = require('./AccessTypes');
 const departments = require('./Departments');
 const documents = require('./Documents');
-
-
 
 module.exports = (app) => {
   // Index route

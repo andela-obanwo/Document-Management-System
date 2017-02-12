@@ -14,13 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     accessTypeId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     docTypeId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    departmentId: {
       type: DataTypes.INTEGER,
       allowNull: false
     }
@@ -38,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
         });
         Documents.belongsTo(models.AccessTypes, {
           foreignKey: 'accessTypeId',
-          onDelete: 'CASCADE'
-        });
-        Documents.belongsTo(models.Departments, {
-          foreignKey: 'departmentId',
           onDelete: 'CASCADE'
         });
       }

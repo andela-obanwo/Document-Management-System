@@ -61,8 +61,9 @@ const UsersController = {
         return res.status(409)
         .send({ message: `User with email: ${req.body.email} already exists` });
       }
-      //Restrict from creating an Admin user
-      if (parseInt(req.body.roleId, 10) === 1 || parseInt(req.body.roleId, 10) === 2 ){
+      // Restrict from creating an Admin user
+      if (parseInt(req.body.roleId, 10) === 1
+      || parseInt(req.body.roleId, 10) === 2) {
         return res.status(401).send({
           message: 'You are not allowed to create an Admin user'
         });

@@ -44,7 +44,8 @@ const DocumentTypesController = {
         db.DocumentTypes.create(req.body)
         .then((documentType) => {
           res.status(201).send({
-            message: `DocumentType ${req.body.name} successfully created`, documentType
+            message: `DocumentType ${req.body.name} successfully created`,
+            documentType
           });
         })
         .catch((err) => {
@@ -102,7 +103,9 @@ const DocumentTypesController = {
         }
 
         documentType.destroy()
-        .then(() => res.send({ message: 'DocumentType deleted successfully.' }));
+        .then(() => res.send({
+          message: 'DocumentType deleted successfully.'
+        }));
       });
     } else {
       return res.send({ message: 'You are unauthorized to access this route' });

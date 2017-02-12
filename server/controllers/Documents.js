@@ -1,8 +1,4 @@
-const jwt = require('jsonwebtoken');
 const db = require('../models');
-
-const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
-
 
 const DocumentsController = {
   /**
@@ -20,7 +16,10 @@ const DocumentsController = {
       });
     } else if (req.adminType === 'departmentAdmin') {
       db.Documents.findAll({
-        where: { departmentId: req.decoded.departmentId }
+        include: [{
+          model: db.Users,
+          where: { departmentId: req.decoded.departmentId }
+        }]
       })
       .then((documents) => {
         req.userIds = documents;
@@ -32,89 +31,130 @@ const DocumentsController = {
     } else {
       db.Documents.findAll({
         include: [{
-          model: db.AccessTypes
+          model: db.AccessTypes,
+          where: { name: 'public' }
+        },
+        {
+          model: db.Users,
+          where: { departmentId: req.decoded.departmentId }
         }],
-        where: db.sequelize.and(
-        { 'AccessTypes.name': 'public'},
-        { departmentId: req.decoded.departmentId })
+      })
+      .then((documents) => {
+        res.status(200).send(documents);
       });
     }
   },
 
   /**
-   * Create a user
-   * Route: POST: /users
+   * Create a document
+   * Route: POST: /documents
    * @param {Object} req request object
    * @param {Object} res response object
    * @returns {Response|void} response object or void
    */
   create(req, res) {
-    db.Users.findOne({ where: { email: req.body.email } })
-    .then((userExists) => {
-      if (userExists) {
-        return res.status(409)
-        .send({ message: `User with email: ${req.body.email} already exists` });
-      }
-      //Restrict from creating an Admin user
-      if (parseInt(req.body.roleId, 10) === 1 || parseInt(req.body.roleId, 10) === 2 ){
-        return res.status(401).send({
-          message: 'You are not allowed to create an Admin user'
-        });
-      }
-      db.Users.create(req.body)
-      .then((user) => {
-        user = user.dataValues;
-        const token = jwt.sign(user, secret, { expiresIn: '120m' });
-
-        res.status(201).send({ token, expiresIn: '120m' });
-      })
-        .catch((err) => {
-          res.status(400).send(err);
-        });
+    req.body.userId = req.decoded.id;
+    db.Documents.create(req.body)
+    .then((document) => {
+      res.status(201).send(document);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
     });
   },
 
   /**
-   * Get a particular user
-   * Route: GET: /users/:id
+   * Get a particular document
+   * Route: GET: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
    * @returns {Response|void} response object or void
    */
   fetchOne(req, res) {
-    db.Users.findById(req.params.id)
-    .then((user) => {
-      user = user.dataValues;
-      if (!user) {
-        return res.status(404)
-          .send({ message: `User with id: '${req.params.id}', not found` });
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      res.status(404).send(err);
-    });
+    if (req.adminType === 'superAdmin') {
+      db.Documents.findById(req.params.id)
+      .then((document) => {
+        document = document.dataValues;
+        if (!document) {
+          return res.status(404)
+          .send({ message: `Document with id: '${req.params.id}', not found` });
+        }
+        res.send(document);
+      })
+      .catch((err) => {
+        res.status(404).send(err);
+      });
+    } else if (req.adminType === 'departmentAdmin') {
+      db.Documents.find({
+        include: [{
+          model: db.Users,
+          where: { departmentId: req.decoded.departmentId }
+        }],
+        where: { id: req.params.id }
+      })
+      .then((document) => {
+        if (!document) {
+          return res.status(404)
+          .send({
+            message: `Document with id: '${req.params.id}', is not available`
+          });
+        }
+        res.send(document);
+      })
+      .catch((err) => {
+        res.status(404).send(err);
+      });
+    } else {
+      db.Documents.findById(req.params.id)
+      .then((document) => {
+        if (!document) {
+          return res.status(404)
+          .send({ message: `Document with id: '${req.params.id}', not found` });
+        } else if (document.userId === req.decoded.id) {
+          return res.status(200).send(document);
+        } else if (document.accessTypeId !== 2) {
+          return res.status(200).send(document);
+        }
+        res.status(409)
+        .send({ message: 'You are not authorized to view this content' });
+      });
+    }
   },
 
   /**
-   * Update a particular user
-   * Route: PUT: /users/:id
+   * Update a particular document
+   * Route: PUT: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
    * @returns {Response|void} response object or void
    */
   edit(req, res) {
-    db.Users.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
+    db.Documents.findById(req.params.id)
+    .then((document) => {
+      if (!document) {
         return res.status(404)
-        .send({ message: `User with id: ${req.params.id} not found` });
-      }
-
-      user.update(req.body)
-        .then((updatedUser) => {
-          res.send(updatedUser);
+        .send({ message: `Document with id: ${req.params.id} not found` });
+      } else if (document.userId === req.decoded.id
+        || req.adminType === 'superAdmin') {
+        document.update(req.body)
+        .then(updatedDocument => res.status(200).send(updatedDocument));
+      } else if (req.adminType === 'departmentAdmin') {
+        db.Users.find({
+          where: { id: document.userId }
+        })
+        .then((user) => {
+          if (user.departmentId === req.decoded.departmentId) {
+            document.update(req.body)
+              .then(updatedDocument => res.send(updatedDocument));
+          } else {
+            return res.status(401)
+            .send({ message: 'Insufficient Privileges to edit' });
+          }
         });
+      } else {
+        return res.status(401)
+        .send({ message: 'Insufficient Privileges to edit' });
+      }
     })
     .catch((err) => {
       res.status(404).send(err);
@@ -122,48 +162,54 @@ const DocumentsController = {
   },
 
   /**
-   * Delete a particular user
-   * Route: DELETE: /users/:id
+   * Delete a particular document
+   * Route: DELETE: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
    * @returns {Response|void} response object or void
    */
   destroy(req, res) {
-    db.Users.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
+    db.Documents.findById(req.params.id)
+    .then((document) => {
+      if (!document) {
         return res.status(404)
-        .send({ message: `User with id: ${req.params.id} not found` });
-      }
-
-      user.destroy()
-      .then(() => res.send({ message: 'User deleted successfully.' }));
-    });
-  },
-
-  /**
-   * Login user
-   * Route: POST: /users/login
-   * @param {Object} req request object
-   * @param {Object} res response object
-   * @returns {Response|void} response object or void
-   */
-  login(req, res) {
-    db.Users.findOne({ where: { email: req.body.email } })
-    .then((user) => {
-      // user = user.dataValues;
-      if (user && user.validPassword(req.body.password)) {
-        const token = jwt.sign(user.dataValues, secret, { expiresIn: '120m' });
-        res.send({ token, expiresIn: '120m' });
+        .send({ message: `Document with id: ${req.params.id} not found` });
+      } else if (document.userId === req.decoded.id
+        || req.adminType === 'superAdmin') {
+        document.destroy()
+        .then(() => res.send({ message: 'Document deleted successfully.' }));
+      } else if (req.adminType === 'departmentAdmin') {
+        db.Users.find({
+          where: { id: document.userId }
+        })
+        .then((user) => {
+          if (user.departmentId === req.decoded.departmentId) {
+            document.destroy()
+            .then(() => res.send({
+              message: 'Document deleted successfully.' }));
+          } else {
+            return res.status(401)
+            .send({ message: 'Insufficient Privileges to delete' });
+          }
+        });
       } else {
-        res.status(401)
-        .send({ message: 'Failed to authenticate.' });
+        return res.status(401)
+        .send({ message: 'Insufficient Privileges to delete' });
       }
+    })
+    .catch((err) => {
+      res.status(404).send(err);
     });
   },
 
-  logout(req, res) {
-    res.send({ message: 'Logout successful.' });
+  fetchUserDocuments(req, res) {
+    db.Documents.findAll({
+      where: {
+        userId: req.params.id
+      }
+    })
+    .then(documents => res.status(200).send(documents))
+    .catch(err => res.status(400).send(err));
   }
 };
 
