@@ -4,7 +4,8 @@
   "description": "A document management system offering roles and access restrictions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./server/server.js --exec babel-node --presets es2015"
   },
   "repository": {
     "type": "git",

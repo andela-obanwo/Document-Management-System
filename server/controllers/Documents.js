@@ -30,14 +30,13 @@ const DocumentsController = {
         res.status(400).send(err);
       });
     } else {
-      db.Documents.find({
+      db.Documents.findAll({
         include: [{
-          model: 'AccessTypes',
-          as: 'AccessTypes'
+          model: db.AccessTypes
         }],
-        where:
-        { 'AccessTypes.name': 'public',
-          departmentId: req.decoded.departmentId }
+        where: db.sequelize.and(
+        { 'AccessTypes.name': 'public'},
+        { departmentId: req.decoded.departmentId })
       });
     }
   },
