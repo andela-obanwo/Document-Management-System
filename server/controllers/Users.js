@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const db = require('../models');
+import jwt from 'jsonwebtoken';
+import db from '../models';
 
 const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
 
@@ -174,4 +174,4 @@ const UsersController = {
   }
 };
 
-module.exports = UsersController;
+export default UsersController;

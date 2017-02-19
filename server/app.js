@@ -1,10 +1,10 @@
-const express = require('express');
-const parser = require('body-parser');
-const logger = require('morgan');
-const cors = require('cors');
+import express from 'express';
+import parser from 'body-parser';
+import logger from 'morgan';
+import cors from 'cors';
+import routes from './routes/index';
 
 const app = express();
-// const router = express.Router();
 
 app.use(cors());
 app.use(parser.urlencoded({ extended: true }));
@@ -12,6 +12,6 @@ app.use(parser.json());
 app.use(logger('dev'));
 
 // Mount routes
-require('./routes/index')(app);
+routes(app);
 
-module.exports = app;
+export default app;

@@ -1,7 +1,8 @@
+import express from 'express';
 import Authentication from '../middleware/Authentication';
 import DocumentsController from '../controllers/Documents';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.route('/')
 .get(Authentication.verifyToken, Authentication.documentValidator,
@@ -19,4 +20,4 @@ router.route('/:id')
 router.get('/search/:searchQuery', Authentication.verifyToken,
   DocumentsController.searchDocuments);
 
-module.exports = router;
+export default router;

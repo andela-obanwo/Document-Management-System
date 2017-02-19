@@ -1,7 +1,8 @@
+import express from 'express';
 import Authentication from '../middleware/Authentication';
 import AccessTypesController from '../controllers/AccessTypes';
 
-const router = require('express').Router();
+const router = express.Router();
 
 router.route('/')
 .get(Authentication.verifyToken, Authentication.verifyAdmin,
@@ -15,4 +16,4 @@ router.route('/:id')
 .delete(Authentication.verifyToken, Authentication.verifyAdmin,
   AccessTypesController.destroy);
 
-module.exports = router;
+export default router;

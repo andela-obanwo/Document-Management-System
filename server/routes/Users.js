@@ -1,9 +1,9 @@
+import RouterFile from 'express';
 import Authentication from '../middleware/Authentication';
+import DocumentsController from '../controllers/Documents';
+import UsersController from '../controllers/Users';
 
-const router = require('express').Router();
-const DocumentsController = require('../controllers/Documents');
-const UsersController = require('../controllers/Users');
-// const DocumentsController = require('../../app/controllers/documents');
+const router = RouterFile.Router();
 
 router.route('/')
 .get(Authentication.verifyToken, Authentication.verifyAdmin,
@@ -21,4 +21,4 @@ router.get('/:id/documents', Authentication.verifyToken,
 router.post('/login', UsersController.login);
 router.post('/logout', UsersController.logout);
 
-module.exports = router;
+export default router;

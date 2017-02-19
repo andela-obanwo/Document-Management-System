@@ -1,11 +1,11 @@
-const users = require('./Users');
-const roles = require('./Roles');
-const documentTypes = require('./DocumentTypes');
-const accessTypes = require('./AccessTypes');
-const departments = require('./Departments');
-const documents = require('./Documents');
+import users from './Users';
+import roles from './Roles';
+import documentTypes from './DocumentTypes';
+import accessTypes from './AccessTypes';
+import departments from './Departments';
+import documents from './Documents';
 
-module.exports = (app) => {
+export default (app) => {
   // Index route
   app.get('/', (req, res) => {
     res.send({ message: 'Document Management API' });
