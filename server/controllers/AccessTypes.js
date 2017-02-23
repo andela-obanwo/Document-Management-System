@@ -18,10 +18,10 @@ const AccessTypesController = {
           'updatedAt'
         ]
       }).then((accessTypes) => {
-        res.send(accessTypes);
+        res.status(200).send(accessTypes);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(403).send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -53,7 +53,7 @@ const AccessTypesController = {
         });
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401).send({ message: 'You are unauthorized to access this route' });
     }
   },
 
