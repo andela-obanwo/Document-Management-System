@@ -40,13 +40,40 @@ const data = {
     roleId: 2,
     departmentId: 3
   },
-  regularUser1: {
+  departmentAdminUser3: {
     username: faker.internet.userName(),
     firstname: faker.name.firstName(),
     lastname: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
+    roleId: 2,
+    departmentId: 3
+  },
+  regularUser1: {
+    username: 'simisoladavid',
+    firstname: 'simisola',
+    lastname: 'david',
+    email: 'simisola@david.com',
+    password: 'simidavids',
     roleId: 3,
+    departmentId: 2
+  },
+  regularUser1edit: {
+    username: 'simisoladavid',
+    firstname: 'simisola',
+    lastname: 'david',
+    email: 'simisola@david.com',
+    password: 'simidavidsmodified',
+    roleId: 3,
+    departmentId: 2
+  },
+  regularUser1Admin: {
+    username: 'simisoladavid',
+    firstname: 'simisola',
+    lastname: 'david',
+    email: 'simisola@david.com',
+    password: 'simidavidsmodified',
+    roleId: 1,
     departmentId: 2
   },
   regularUser2: {
@@ -58,21 +85,30 @@ const data = {
     roleId: 3,
     departmentId: 3
   },
-  regularUser3: {
+  superAdminUser2: {
     username: faker.internet.userName(),
     firstname: faker.name.firstName(),
     lastname: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    roleId: 3,
+    roleId: 1,
     departmentId: 2
   },
   regularUser4: {
-    username: faker.internet.userName(),
-    firstname: faker.name.firstName(),
-    lastname: faker.name.lastName(),
-    email: faker.internet.email(),
-    password: faker.internet.password(),
+    username: 'username',
+    firstname: 'firstname',
+    lastname: 'lastname',
+    email: 'email@email.com',
+    password: 'password',
+    roleId: 3,
+    departmentId: 2
+  },
+  regularUser4Edit: {
+    username: 'username',
+    firstname: 'firstname',
+    lastname: 'lastname',
+    email: 'email@email.com',
+    password: 'passwordModified',
     roleId: 3,
     departmentId: 2
   },
@@ -86,10 +122,10 @@ const data = {
     departmentId: 3
   },
   invalidUser: {
-    username: faker.internet.userName(),
+    username: null,
     firstname: faker.name.firstName(),
     lastname: faker.name.lastName(),
-    email: faker.internet.email(),
+    email: 'a@a.com',
     password: faker.internet.password(),
     roleId: 3,
     departmentId: 4
@@ -143,12 +179,33 @@ const data = {
     docTypeId: 2,
     userId: 4,
   },
-  roleDocument: {
+  privateDocument4: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    accessTypeId: 2,
+    docTypeId: 2,
+    userId: 4,
+  },
+  roleDocument1: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph(),
     access: 3,
     docTypeId: 3,
-    userId: 4,
+    userId: 2,
+  },
+  roleDocument2: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    access: 3,
+    docTypeId: 1,
+    userId: 3,
+  },
+  roleDocument3: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    access: 3,
+    docTypeId: 3,
+    userId: 3,
   },
   publicAccessType: {
     id: 1,
