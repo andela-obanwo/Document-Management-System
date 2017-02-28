@@ -18,10 +18,11 @@ const RolesController = {
           'updatedAt'
         ]
       }).then((roles) => {
-        res.send(roles);
+        res.status(200).send(roles);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -52,7 +53,8 @@ const RolesController = {
         });
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -69,19 +71,21 @@ const RolesController = {
       .then((role) => {
         if (!role) {
           return res.status(404)
-          .send({ message: `Role ${req.body.name} not found` });
+          .send({ message: 'Role not found' });
         }
 
         role.update(req.body)
           .then((updatedRole) => {
-            res.send({ message: 'Update Successful', updatedRole });
+            res.status(200)
+            .send({ message: 'Update Successful', updatedRole });
           });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -98,14 +102,19 @@ const RolesController = {
       .then((role) => {
         if (!role) {
           return res.status(404)
-          .send({ message: `Role ${req.body.name} not found` });
+          .send({ message: 'Role not found' });
         }
 
         role.destroy()
-        .then(() => res.send({ message: 'Role deleted successfully.' }));
+        .then(() => res.status(200)
+        .send({ message: 'Role deleted successfully.' }));
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   }
 };

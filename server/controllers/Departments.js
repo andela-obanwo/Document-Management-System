@@ -21,7 +21,8 @@ const DepartmentsController = {
         res.send(departments);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -53,7 +54,8 @@ const DepartmentsController = {
         });
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -70,7 +72,7 @@ const DepartmentsController = {
       .then((department) => {
         if (!department) {
           return res.status(404)
-          .send({ message: `Department ${req.body.name} not found` });
+          .send({ message: 'Department not found' });
         }
 
         department.update(req.body)
@@ -79,10 +81,11 @@ const DepartmentsController = {
           });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -99,14 +102,18 @@ const DepartmentsController = {
       .then((department) => {
         if (!department) {
           return res.status(404)
-          .send({ message: `Department ${req.body.name} not found` });
+          .send({ message: 'Department not found' });
         }
 
         department.destroy()
         .then(() => res.send({ message: 'Department deleted successfully.' }));
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   }
 };
