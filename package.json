@@ -8,7 +8,8 @@
     "cover": "NODE_ENV=test istanbul cover _mocha -- server/tests/**/*.js --compilers js:babel-core/register --timeout 20000",
     "start": "nodemon ./server/Server.js --exec babel-node --presets es2015",
     "test-seed": "sequelize db:seed --seed 20170221112635-AccessTypes.js --env 'test'",
-    "test-migrate": "sequelize db:migrate --env test"
+    "test-migrate": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
+    "coverage": "npm run test-migrate && npm run cover"
   },
   "repository": {
     "type": "git",
