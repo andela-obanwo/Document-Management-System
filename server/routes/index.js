@@ -8,7 +8,7 @@ import documents from './Documents';
 export default (app) => {
   // Index route
   app.get('/', (req, res) => {
-    res.send({ message: 'Document Management API' });
+    res.status(200).send({ message: 'Document Management API, Welcome' });
   });
 
   app.use('/roles', roles);
