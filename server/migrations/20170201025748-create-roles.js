@@ -1,6 +1,6 @@
-module.exports = {
+export default {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('DocumentTypes', {
+    return queryInterface.createTable('Roles', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,8 +9,8 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
-        isUnique: true
+        isUnique: true,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -22,7 +22,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('DocumentTypes');
+  down(queryInterface/* , Sequelize*/) {
+    return queryInterface.dropTable('Roles');
   }
 };

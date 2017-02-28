@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Documents = sequelize.define('Documents', {
     title: {
       type: DataTypes.STRING,
@@ -8,32 +8,33 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    ownerId: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
     accessTypeId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
-    docTypeID: {
+    docTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
+    }
   }, {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
         Documents.belongsTo(models.Users, {
-          foreignKey: 'ownerId',
+          foreignKey: 'userId',
           onDelete: 'CASCADE'
         });
-        Documents.belongsTo(models.DocumentType, {
-          foreignKey: 'docTypeID',
+        Documents.belongsTo(models.DocumentTypes, {
+          foreignKey: 'docTypeId',
           onDelete: 'CASCADE'
         });
-        Documents.belongsTo(models.AccessType, {
-          foreignKey: 'accessTypeID',
+        Documents.belongsTo(models.AccessTypes, {
+          foreignKey: 'accessTypeId',
           onDelete: 'CASCADE'
         });
       }

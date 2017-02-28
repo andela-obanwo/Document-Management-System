@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Departments', {
       id: {
@@ -22,7 +22,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
+  down(queryInterface/* , Sequelize*/) {
     return queryInterface.dropTable('Departments');
   }
 };

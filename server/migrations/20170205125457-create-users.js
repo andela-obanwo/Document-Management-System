@@ -1,45 +1,53 @@
-module.exports = {
+export default {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Documents', {
+    return queryInterface.createTable('Users', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
+      username: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+      },
+      firstname: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      content: {
-        type: Sequelize.TEXT,
+      lastname: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      ownerId: {
+      email: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+          isEmail: true
+        }
+      },
+      password: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 3,
         references: {
-          model: 'Users',
+          model: 'Roles',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      accessTypeId: {
+      departmentId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'AccessTypes',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
-      docTypeID: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'DocumentTypes',
+          model: 'Departments',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -55,7 +63,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Documents');
+  down(queryInterface/* , Sequelize*/) {
+    return queryInterface.dropTable('Users');
   }
 };

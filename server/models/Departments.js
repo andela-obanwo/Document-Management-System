@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Departments = sequelize.define('Departments', {
     name: {
       type: DataTypes.STRING,
@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       associate: (models) => {
         // associations can be defined here
         Departments.hasMany(models.Users, {
-          foreignKey: 'departmentID',
+          foreignKey: 'departmentId',
           onDelete: 'CASCADE'
         });
       }

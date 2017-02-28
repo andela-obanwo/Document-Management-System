@@ -1,5 +1,5 @@
-module.exports = (sequelize, DataTypes) => {
-  const AccessType = sequelize.define('AccessType', {
+export default (sequelize, DataTypes) => {
+  const AccessTypes = sequelize.define('AccessTypes', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: (models) => {
         // associations can be defined here
-        AccessType.hasMany(models.Documents, {
-          foreignKey: 'accessTypeID',
+        AccessTypes.hasMany(models.Documents, {
+          foreignKey: 'accessTypeId',
           onDelete: 'CASCADE'
         });
       }
     }
   });
-  return AccessType;
+  return AccessTypes;
 };

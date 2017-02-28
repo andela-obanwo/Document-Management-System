@@ -1,6 +1,6 @@
-module.exports = {
+export default {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('AccessTypes', {
+    return queryInterface.createTable('DocumentTypes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -22,7 +22,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('AccessTypes');
+  down(queryInterface/* , Sequelize*/) {
+    return queryInterface.dropTable('DocumentTypes');
   }
 };
