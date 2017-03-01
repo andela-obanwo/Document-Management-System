@@ -10,7 +10,7 @@ services:
 
 before_script:
   - psql -c 'create database database_test;' -U postgres
-  - psql CREATE ROLE docman SUPERUSER with password 'docman'
+  - psql CREATE ROLE docman SUPERUSER with password 'docman
 
 script:
   - npm test
