@@ -9,7 +9,7 @@ services:
   - postgresql
 
 before_script:
-  - psql "CREATE docman SUPERUSER with password 'docman'"
+  - psql "CREATE ROLE docman SUPERUSER with password 'docman'"
   - psql -c 'create database database_test;' -U postgres
 script:
   - npm test

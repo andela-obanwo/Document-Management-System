@@ -9,7 +9,7 @@
     "start": "nodemon ./server/Server.js --exec babel-node --presets es2015",
     "test-seed": "sequelize db:seed --seed 20170221112635-AccessTypes.js --env 'test'",
     "test-migrate": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
-    "coverage": "npm run test-migrate && npm run cover"
+    "coveralls": "npm run test && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
