@@ -166,7 +166,7 @@ const data = {
     userId: 3,
   },
   privateDocument2: {
-    title: faker.company.catchPhrase(),
+    title: 'we worship forever',
     content: faker.lorem.paragraph(),
     accessTypeId: 2,
     docTypeId: 3,
