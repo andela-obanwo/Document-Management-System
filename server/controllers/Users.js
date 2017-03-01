@@ -84,7 +84,6 @@ const UsersController = {
       }
       db.Users.create(req.body)
       .then((user) => {
-        // user = user.dataValues;
         const token = jwt.sign(
           {
             id: user.id,
@@ -151,7 +150,6 @@ const UsersController = {
     }
     db.Users.findById(parseInt(req.params.id, 10))
     .then((user) => {
-      // user = user.dataValues;
       if (!user) {
         return res.status(404)
           .send({ message: 'User not found' });

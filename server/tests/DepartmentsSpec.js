@@ -6,7 +6,6 @@ import db from '../models';
 
 const request = Request.agent(app);
 const expect = chai.expect;
-// console.log(app);
 const superAdmin = testData.superAdminUser;
 const departmentAdmin = testData.departmentAdminUser1;
 

@@ -62,9 +62,6 @@ const Authentication = {
     .then((user) => {
       db.Roles.findById(user.roleId)
         .then((role) => {
-          // console.log(role.name, 'this is the role name')
-          // console.log(role);
-          // role = role.dataValues;
           if (role.name === 'departmentAdmin' || role.name === 'superAdmin') {
             req.adminType = role.name;
             next();
