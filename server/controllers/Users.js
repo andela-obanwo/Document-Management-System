@@ -208,7 +208,7 @@ const UsersController = {
    */
   destroy(req, res) {
     if (req.adminType === 'superAdmin') {
-      db.Users.findById(parseInt(req.params.id, 10))
+      db.Users.findById(req.params.id)
       .then((user) => {
         if (!user) {
           return res.status(404)
@@ -222,7 +222,9 @@ const UsersController = {
         .then(() => res.status(200)
         .send({ message: 'User deleted successfully.' }));
       })
-      .catch(err => res.status(400).send(err));
+      .catch((err) => {
+        res.status(400).send(err);
+      });
     } else {
       return res.status(401)
     .send({ message: 'You are not allowed to delete this user' });

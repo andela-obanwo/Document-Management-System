@@ -11,9 +11,11 @@ router.route('/')
 .post(UsersController.create);
 
 router.route('/:id')
-.get(Authentication.verifyToken, Authentication.validator, UsersController.fetchOne)
+.get(Authentication.verifyToken,
+  Authentication.validator, UsersController.fetchOne)
 .put(Authentication.verifyToken, Authentication.validator, UsersController.edit)
-.delete(Authentication.verifyToken, Authentication.validator, UsersController.destroy);
+.delete(Authentication.verifyToken,
+  Authentication.validator, UsersController.destroy);
 
 router.get('/:id/documents', Authentication.verifyToken,
   DocumentsController.fetchUserDocuments);

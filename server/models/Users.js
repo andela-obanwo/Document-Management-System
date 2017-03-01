@@ -82,9 +82,7 @@ export default (sequelize, DataTypes) => {
       },
 
       beforeUpdate(users) {
-        if (users.changed.password) {
-          users.hashPassword();
-        }
+        users.hashPassword();
       }
     }
   });
