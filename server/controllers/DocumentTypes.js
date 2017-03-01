@@ -1,4 +1,4 @@
-const db = require('../models');
+import db from '../models';
 
 const DocumentTypesController = {
   /**
@@ -21,7 +21,8 @@ const DocumentTypesController = {
         res.send(documenttypes);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -53,7 +54,8 @@ const DocumentTypesController = {
         });
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -70,19 +72,21 @@ const DocumentTypesController = {
       .then((documentType) => {
         if (!documentType) {
           return res.status(404)
-          .send({ message: `DocumentType ${req.body.name} not found` });
+          .send({ message: 'DocumentType not found' });
         }
 
         documentType.update(req.body)
           .then((updatedDocumentType) => {
-            res.send({ message: 'Update Successful', updatedDocumentType });
+            res.status(200)
+            .send({ message: 'Update Successful', updatedDocumentType });
           });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -99,16 +103,19 @@ const DocumentTypesController = {
       .then((documentType) => {
         if (!documentType) {
           return res.status(404)
-          .send({ message: `DocumentType ${req.body.name} not found` });
+          .send({ message: 'DocumentType not found' });
         }
 
         documentType.destroy()
-        .then(() => res.send({
-          message: 'DocumentType deleted successfully.'
-        }));
+        .then(() => res.status(200)
+        .send({ message: 'DocumentType deleted successfully.' }));
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   }
 };

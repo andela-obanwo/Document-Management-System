@@ -10,39 +10,49 @@ const DocumentsController = {
    */
   fetchAll(req, res) {
     if (req.adminType === 'superAdmin') {
-      db.Documents.findAll({
+      return db.Documents.findAll({
       }).then((documents) => {
-        res.status(201).send(documents);
+        res.status(200).send({
+          data: documents,
+          message: 'All documents returned Successfully'
+        });
       });
     } else if (req.adminType === 'departmentAdmin') {
-      db.Documents.findAll({
+      return db.Documents.findAll({
         include: [{
           model: db.Users,
           where: { departmentId: req.decoded.departmentId }
         }]
       })
       .then((documents) => {
-        req.userIds = documents;
-        res.status(201).send(documents);
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-    } else {
-      db.Documents.findAll({
-        include: [{
-          model: db.AccessTypes,
-          where: { name: 'public' }
-        },
-        {
-          model: db.Users,
-          where: { departmentId: req.decoded.departmentId }
-        }],
-      })
-      .then((documents) => {
-        res.status(200).send(documents);
+        res.status(200).send({
+          data: documents,
+          message: 'All Department Documents returned successfully'
+        });
       });
     }
+    return db.Documents.findAll({
+      include: [{
+        model: db.AccessTypes,
+        where: { name: 'public' }
+      },
+      {
+        model: db.Users,
+        where: { departmentId: req.decoded.departmentId }
+      }]
+    })
+    .then(documents =>
+      db.Documents.findAll({
+        where: {
+          userId: req.decoded.id
+        }
+      })
+      .then((personalDocs) => {
+        res.status(200).send({
+          data: { public: documents, personal: personalDocs },
+          message: 'Public Documents for your department returned'
+        });
+      }));
   },
 
   /**
@@ -56,7 +66,10 @@ const DocumentsController = {
     req.body.userId = req.decoded.id;
     db.Documents.create(req.body)
     .then((document) => {
-      res.status(201).send(document);
+      res.status(201).send({
+        data: document,
+        message: 'Document Created Successfully'
+      });
     })
     .catch((err) => {
       res.status(400).send(err);
@@ -72,17 +85,19 @@ const DocumentsController = {
    */
   fetchOne(req, res) {
     if (req.adminType === 'superAdmin') {
-      db.Documents.findById(req.params.id)
+      db.Documents.findById(parseInt(req.params.id, 10))
       .then((document) => {
-        document = document.dataValues;
         if (!document) {
           return res.status(404)
           .send({ message: `Document with id: '${req.params.id}', not found` });
         }
-        res.send(document);
+        res.status(200).send({
+          data: document,
+          message: 'Document fetched successfully'
+        });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else if (req.adminType === 'departmentAdmin') {
       db.Documents.find({
@@ -99,25 +114,35 @@ const DocumentsController = {
             message: `Document with id: '${req.params.id}', is not available`
           });
         }
-        res.send(document);
+        res.status(200).send({
+          data: document,
+          message: 'Data fetched successfully'
+        });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else {
-      db.Documents.findById(req.params.id)
+      db.Documents.findById(parseInt(req.params.id, 10))
       .then((document) => {
         if (!document) {
           return res.status(404)
           .send({ message: `Document with id: '${req.params.id}', not found` });
         } else if (document.userId === req.decoded.id) {
-          return res.status(200).send(document);
+          return res.status(200).send({
+            data: document,
+            message: 'Data fetched successfully'
+          });
         } else if (document.accessTypeId !== 2) {
-          return res.status(200).send(document);
+          return res.status(200).send({
+            data: document,
+            message: 'Data fetched successfully'
+          });
         }
-        res.status(409)
+        res.status(401)
         .send({ message: 'You are not authorized to view this content' });
-      });
+      })
+      .catch(err => res.status(400).send(err));
     }
   },
 
@@ -137,7 +162,10 @@ const DocumentsController = {
       } else if (document.userId === req.decoded.id
         || req.adminType === 'superAdmin') {
         document.update(req.body)
-        .then(updatedDocument => res.status(200).send(updatedDocument));
+        .then(updatedDocument => res.status(200).send({
+          data: updatedDocument,
+          message: 'Document Updated Successfully'
+        }));
       } else if (req.adminType === 'departmentAdmin') {
         db.Users.find({
           where: { id: document.userId }
@@ -145,7 +173,10 @@ const DocumentsController = {
         .then((user) => {
           if (user.departmentId === req.decoded.departmentId) {
             document.update(req.body)
-              .then(updatedDocument => res.send(updatedDocument));
+              .then(updatedDocument => res.status(200).send({
+                data: updatedDocument,
+                message: 'Document Updated Successfully'
+              }));
           } else {
             return res.status(401)
             .send({ message: 'Insufficient Privileges to edit' });
@@ -157,7 +188,7 @@ const DocumentsController = {
       }
     })
     .catch((err) => {
-      res.status(404).send(err);
+      res.status(400).send(err);
     });
   },
 
@@ -169,7 +200,7 @@ const DocumentsController = {
    * @returns {Response|void} response object or void
    */
   destroy(req, res) {
-    db.Documents.findById(req.params.id)
+    db.Documents.findById(parseInt(req.params.id, 10))
     .then((document) => {
       if (!document) {
         return res.status(404)
@@ -177,7 +208,8 @@ const DocumentsController = {
       } else if (document.userId === req.decoded.id
         || req.adminType === 'superAdmin') {
         document.destroy()
-        .then(() => res.send({ message: 'Document deleted successfully.' }));
+        .then(() => res.status(200)
+        .send({ message: 'Document deleted successfully' }));
       } else if (req.adminType === 'departmentAdmin') {
         db.Users.find({
           where: { id: document.userId }
@@ -185,8 +217,8 @@ const DocumentsController = {
         .then((user) => {
           if (user.departmentId === req.decoded.departmentId) {
             document.destroy()
-            .then(() => res.send({
-              message: 'Document deleted successfully.' }));
+            .then(() => res.status(200).send({
+              message: 'Document deleted successfully' }));
           } else {
             return res.status(401)
             .send({ message: 'Insufficient Privileges to delete' });
@@ -198,7 +230,7 @@ const DocumentsController = {
       }
     })
     .catch((err) => {
-      res.status(404).send(err);
+      res.status(400).send(err);
     });
   },
 
@@ -234,10 +266,11 @@ const DocumentsController = {
       }
     })
     .then((documents) => {
-      if (!documents) {
-        return res.send({ message: 'No Documents matching search found' });
+      if (!documents.length) {
+        return res.status(404)
+        .send({ message: 'No Documents matching search found' });
       }
-      return res.send(documents);
+      return res.status(200).send(documents);
     })
     .catch(err => res.status(400).send(err));
   }

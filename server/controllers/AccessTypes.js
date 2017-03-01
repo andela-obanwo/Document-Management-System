@@ -18,10 +18,11 @@ const AccessTypesController = {
           'updatedAt'
         ]
       }).then((accessTypes) => {
-        res.send(accessTypes);
+        res.status(200).send(accessTypes);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -53,7 +54,8 @@ const AccessTypesController = {
         });
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -70,19 +72,21 @@ const AccessTypesController = {
       .then((accessType) => {
         if (!accessType) {
           return res.status(404)
-          .send({ message: `AccessType ${req.body.name} not found` });
+          .send({ message: 'AccessType not found' });
         }
 
         accessType.update(req.body)
           .then((updatedAccessType) => {
-            res.send({ message: 'Update Successful', updatedAccessType });
+            res.status(200)
+            .send({ message: 'Update Successful', updatedAccessType });
           });
       })
       .catch((err) => {
-        res.status(404).send(err);
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   },
 
@@ -99,14 +103,19 @@ const AccessTypesController = {
       .then((accessType) => {
         if (!accessType) {
           return res.status(404)
-          .send({ message: `AccessType ${req.body.name} not found` });
+          .send({ message: 'AccessType not found' });
         }
 
         accessType.destroy()
-        .then(() => res.send({ message: 'AccessType deleted successfully.' }));
+        .then(() => res.status(200)
+        .send({ message: 'AccessType deleted successfully.' }));
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
     } else {
-      return res.send({ message: 'You are unauthorized to access this route' });
+      return res.status(401)
+      .send({ message: 'You are unauthorized to access this route' });
     }
   }
 };

@@ -41,36 +41,39 @@ const Authentication = {
    * @returns {Object} Response Object
    */
   verifyAdmin(req, res, next) {
-    db.Roles.findById(req.decoded.roleId)
-      .then((role) => {
-        role = role.dataValues;
-        if (role.name === 'departmentAdmin') {
-          req.adminType = 'departmentAdmin';
-          next();
-        } else if (role.name === 'superAdmin') {
-          req.adminType = 'superAdmin';
-          next();
-        } else {
-          return res.status(403)
-          .send({ message: 'Access forbidden, you do not have Admin rights' });
-        }
-      });
+    db.Users.findById(req.decoded.id)
+    .then((user) => {
+      db.Roles.findById(user.roleId)
+        .then((role) => {
+          role = role.dataValues;
+          if (role.name === 'departmentAdmin' || role.name === 'superAdmin') {
+            req.adminType = role.name;
+            next();
+          } else {
+            return res.status(401)
+            .send({
+              message: 'Access forbidden, you do not have Admin rights' });
+          }
+        });
+    });
   },
-  documentValidator(req, res, next) {
-    db.Roles.findById(req.decoded.roleId)
-      .then((role) => {
-        role = role.dataValues;
-        if (role.name === 'departmentAdmin') {
-          req.adminType = 'departmentAdmin';
-          next();
-        } else if (role.name === 'superAdmin') {
-          req.adminType = 'superAdmin';
-          next();
-        } else {
-          req.adminType = 'user';
-          next();
-        }
-      });
+  validator(req, res, next) {
+    db.Users.findById(req.decoded.id)
+    .then((user) => {
+      db.Roles.findById(user.roleId)
+        .then((role) => {
+          // console.log(role.name, 'this is the role name')
+          // console.log(role);
+          // role = role.dataValues;
+          if (role.name === 'departmentAdmin' || role.name === 'superAdmin') {
+            req.adminType = role.name;
+            next();
+          } else {
+            req.adminType = 'user';
+            next();
+          }
+        });
+    });
   }
 };
 
