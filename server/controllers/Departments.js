@@ -21,7 +21,7 @@ const DepartmentsController = {
         res.send(departments);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -54,7 +54,7 @@ const DepartmentsController = {
         });
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -84,7 +84,7 @@ const DepartmentsController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -112,7 +112,7 @@ const DepartmentsController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   }

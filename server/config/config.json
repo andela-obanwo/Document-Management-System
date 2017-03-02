@@ -1,24 +1,14 @@
 {
   "development": {
-    "username": "docman",
-    "password": "docman",
-    "database": "database_development",
-    "host": "127.0.0.1",
+    "use_env_variable": "DB_DEV_URL",
     "dialect": "postgres"
   },
   "test": {
-    "username": "postgres",
-    "password": "postgres",
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "use_env_variable": "DB_TEST_URL",
     "dialect": "postgres",
     "logging": false
   },
   "production": {
-    "username": "docman",
-    "password": "docman",
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "use_env_variable": "DATABASE_URL"
   }
 }

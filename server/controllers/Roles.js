@@ -21,7 +21,7 @@ const RolesController = {
         res.status(200).send(roles);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -53,7 +53,7 @@ const RolesController = {
         });
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -84,7 +84,7 @@ const RolesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -113,7 +113,7 @@ const RolesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   }

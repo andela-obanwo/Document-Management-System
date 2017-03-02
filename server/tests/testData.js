@@ -130,7 +130,7 @@ const data = {
     roleId: 3,
     departmentId: 4
   },
-  publicDocument1: {
+  publicDocument4: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph(),
     accessTypeId: 1,
@@ -151,9 +151,9 @@ const data = {
     docTypeId: 2,
     userId: 3,
   },
-  publicDocument4: {
-    title: faker.company.catchPhrase(),
-    content: faker.lorem.paragraph(),
+  publicDocument1: {
+    title: 'we give you praise forever',
+    content: 'king of kings',
     accessTypeId: 1,
     docTypeId: 2,
     userId: 4,

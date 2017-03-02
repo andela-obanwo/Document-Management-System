@@ -1,7 +1,7 @@
 import chai from 'chai';
 import Request from 'supertest';
 import app from '../app';
-import testData from './testData';
+import testData from './TestData';
 import db from '../models';
 
 const request = Request.agent(app);
@@ -24,55 +24,45 @@ describe('Document Tests', () => {
       testData.departmentAdminRole,
       testData.userRole
     ])
+    .then(() => db.Departments.bulkCreate([
+      testData.department1,
+      testData.department2,
+      testData.department3
+    ]))
+    .then(() => db.AccessTypes.bulkCreate([
+      testData.publicAccessType,
+      testData.privateAccessType,
+      testData.roleAccessType
+    ]))
+    .then(() => db.DocumentTypes.bulkCreate([
+      testData.documentType1,
+      testData.documentType2,
+      testData.documentType3
+    ]))
+    .then(() => db.Users.bulkCreate([
+      superAdmin,
+      departmentAdmin,
+      userOne,
+      userTwo
+    ], { individualHooks: true }))
+    .then(() => db.Documents.bulkCreate([
+      testData.publicDocument1,
+      testData.publicDocument2,
+      testData.publicDocument3,
+      testData.publicDocument4,
+      testData.privateDocument1,
+      testData.privateDocument2,
+      testData.privateDocument3,
+      testData.roleDocument1,
+      testData.roleDocument2,
+      testData.roleDocument3
+    ]))
     .then(() => {
-      db.Departments.bulkCreate([
-        testData.department1,
-        testData.department2,
-        testData.department3
-      ])
-      .then(() => {
-        db.AccessTypes.bulkCreate([
-          testData.publicAccessType,
-          testData.privateAccessType,
-          testData.roleAccessType
-        ])
-        .then(() => {
-          db.DocumentTypes.bulkCreate([
-            testData.documentType1,
-            testData.documentType2,
-            testData.documentType3
-          ])
-          .then(() => {
-            db.Users.bulkCreate([
-              superAdmin,
-              departmentAdmin,
-              userOne,
-              userTwo
-            ], { individualHooks: true })
-            .then(() => {
-              db.Documents.bulkCreate([
-                testData.publicDocument1,
-                testData.publicDocument2,
-                testData.publicDocument3,
-                testData.publicDocument4,
-                testData.privateDocument1,
-                testData.privateDocument2,
-                testData.privateDocument3,
-                testData.roleDocument1,
-                testData.roleDocument2,
-                testData.roleDocument3
-              ])
-              .then(() => {
-                request.post('/users/login')
-                .send(superAdmin)
-                .end((err, res) => {
-                  superAdminToken = res.body.token;
-                  done();
-                });
-              });
-            });
-          });
-        });
+      request.post('/users/login')
+      .send(superAdmin)
+      .end((err, res) => {
+        superAdminToken = res.body.token;
+        done();
       });
     });
   });
@@ -244,7 +234,7 @@ describe('Document Tests', () => {
       request.get('/documents/6')
       .set({ 'x-access-token': userOneToken })
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are not authorized to view this content');
         done();
@@ -310,7 +300,7 @@ describe('Document Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.privateDocument2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('Insufficient Privileges to edit');
         done();
@@ -321,7 +311,7 @@ describe('Document Tests', () => {
       .set({ 'x-access-token': userOneToken })
       .send(testData.privateDocument2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('Insufficient Privileges to edit');
         done();
@@ -388,7 +378,7 @@ describe('Document Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.privateDocument2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('Insufficient Privileges to delete');
         done();
@@ -399,7 +389,7 @@ describe('Document Tests', () => {
       .set({ 'x-access-token': userOneToken })
       .send(testData.privateDocument2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('Insufficient Privileges to delete');
         done();
@@ -416,18 +406,34 @@ describe('Document Tests', () => {
   });
   describe('Search Document', () => {
     it('should find a document match for search query', (done) => {
-      request.get('/documents/search/forever')
+      request.get('/search/documents?query=kings')
       .set({ 'x-access-token': userTwoToken })
       .end((err, res) => {
         expect(res.status).to.equal(200);
         done();
       });
     });
+    it('should find a document match for search query', (done) => {
+      request.get('/search/documents?query=kings')
+      .set({ 'x-access-token': superAdminToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
+    it('should find a document match for search query', (done) => {
+      request.get('/search/documents?query=a')
+      .set({ 'x-access-token': departmentAdminToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
     it('should find no document matches for search query', (done) => {
-      request.get('/documents/search/helloss')
+      request.get('/search/documents?query=helloss')
       .set({ 'x-access-token': userTwoToken })
       .end((err, res) => {
-        expect(res.status).to.equal(404);
+        expect(res.status).to.equal(200);
         expect(res.body.message).to.equal('No Documents matching search found');
         done();
       });

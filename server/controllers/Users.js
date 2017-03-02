@@ -78,7 +78,7 @@ const UsersController = {
       // Restrict non super Admin from creating an Admin user
       if (parseInt(req.body.roleId, 10) === 2
       || parseInt(req.body.roleId, 10) === 1) {
-        return res.status(401).send({
+        return res.status(403).send({
           message: 'You are not allowed to create an Admin user'
         });
       }
@@ -130,7 +130,7 @@ const UsersController = {
         });
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -145,7 +145,7 @@ const UsersController = {
   fetchOne(req, res) {
     if (req.adminType !== 'superAdmin'
     && parseInt(req.params.id, 10) !== parseInt(req.decoded.id, 10)) {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
     db.Users.findById(parseInt(req.params.id, 10))
@@ -176,12 +176,12 @@ const UsersController = {
         .send({ message: 'User not found' });
       } else if (req.adminType !== 'superAdmin'
         && parseInt(req.params.id, 10) !== parseInt(req.decoded.id, 10)) {
-        return res.status(401)
+        return res.status(403)
         .send({ message: 'You are not allowed to edit this user' });
       } else if (req.adminType !== 'superAdmin'
         && (parseInt(req.body.roleId, 10) === 1
         || parseInt(req.body.roleId, 10) === 2)) {
-        return res.status(401)
+        return res.status(403)
         .send({ message: 'You cannot assign yourself Admin rights' });
       }
       user.update(req.body)
@@ -212,7 +212,7 @@ const UsersController = {
           return res.status(404)
           .send({ message: `User with id: ${req.params.id} not found` });
         } else if (req.decoded.id === user.id) {
-          return res.status(401)
+          return res.status(403)
           .send({ message: 'You cannot delete your own account' });
         }
 
@@ -224,7 +224,7 @@ const UsersController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
     .send({ message: 'You are not allowed to delete this user' });
     }
   },

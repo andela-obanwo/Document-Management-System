@@ -17,7 +17,4 @@ router.route('/:id')
 .delete(Authentication.verifyToken, Authentication.validator,
   DocumentsController.destroy);
 
-router.get('/search/:searchQuery', Authentication.verifyToken,
-  DocumentsController.searchDocuments);
-
 export default router;

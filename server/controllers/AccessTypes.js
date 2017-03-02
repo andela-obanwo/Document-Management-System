@@ -21,7 +21,7 @@ const AccessTypesController = {
         res.status(200).send(accessTypes);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -54,7 +54,7 @@ const AccessTypesController = {
         });
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -85,7 +85,7 @@ const AccessTypesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -114,7 +114,7 @@ const AccessTypesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   }

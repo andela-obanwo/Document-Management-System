@@ -1,7 +1,7 @@
 import chai from 'chai';
 import Request from 'supertest';
 import app from '../app';
-import testData from './testData';
+import testData from './TestData';
 import db from '../models';
 
 const request = Request.agent(app);
@@ -22,25 +22,21 @@ describe('User Tests', () => {
       testData.departmentAdminRole,
       testData.userRole
     ])
+    .then(() => db.Departments.bulkCreate([
+      testData.department1,
+      testData.department2,
+      testData.department3
+    ]))
+    .then(() => db.Users.bulkCreate([
+      superAdmin,
+      departmentAdmin
+    ], { individualHooks: true }))
     .then(() => {
-      db.Departments.bulkCreate([
-        testData.department1,
-        testData.department2,
-        testData.department3
-      ])
-      .then(() => {
-        db.Users.bulkCreate([
-          superAdmin,
-          departmentAdmin
-        ], { individualHooks: true })
-        .then(() => {
-          request.post('/users/login')
-          .send(superAdmin)
-          .end((err, res) => {
-            superAdminToken = res.body.token;
-            done();
-          });
-        });
+      request.post('/users/login')
+      .send(superAdmin)
+      .end((err, res) => {
+        superAdminToken = res.body.token;
+        done();
       });
     });
   });
@@ -80,7 +76,7 @@ describe('User Tests', () => {
       request.post('/users')
       .send(testData.departmentAdminUser2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are not allowed to create an Admin user');
         done();
@@ -90,7 +86,7 @@ describe('User Tests', () => {
       request.post('/users')
       .send(testData.superAdminUser2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are not allowed to create an Admin user');
         done();
@@ -166,7 +162,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.regularUser5)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are unauthorized to access this route');
         done();
@@ -177,7 +173,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': userOneToken })
       .send(testData.regularUser5)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('Access forbidden, you do not have Admin rights');
         done();
@@ -253,7 +249,7 @@ describe('User Tests', () => {
       request.get('/users/4')
       .set({ 'x-access-token': userOneToken })
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are unauthorized to access this route');
         done();
@@ -285,7 +281,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': userOneToken })
       .send(testData.departmentAdminUser2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are not allowed to edit this user');
         done();
@@ -307,7 +303,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': userOneToken })
       .send(testData.regularUser1Admin)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You cannot assign yourself Admin rights');
         done();
@@ -350,7 +346,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.departmentAdminUser2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You are not allowed to delete this user');
         done();
@@ -361,7 +357,7 @@ describe('User Tests', () => {
       .set({ 'x-access-token': superAdminToken })
       .send(testData.departmentAdminUser2)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
         .to.equal('You cannot delete your own account');
         done();

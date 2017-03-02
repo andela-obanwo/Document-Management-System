@@ -21,7 +21,7 @@ const DocumentTypesController = {
         res.send(documenttypes);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -54,7 +54,7 @@ const DocumentTypesController = {
         });
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -85,7 +85,7 @@ const DocumentTypesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   },
@@ -114,7 +114,7 @@ const DocumentTypesController = {
         res.status(400).send(err);
       });
     } else {
-      return res.status(401)
+      return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
   }

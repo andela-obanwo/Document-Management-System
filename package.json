@@ -4,9 +4,12 @@
   "description": "A document management system offering roles and access restrictions",
   "main": "index.js",
   "scripts": {
-    "test": "npm run cover",
+    "build": "rm -rf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./server/tests,./coverage --copy-files",
+    "test": "npm run cover && npm run coveralls",
     "cover": "NODE_ENV=test istanbul cover _mocha -- server/tests/**/*.js --compilers js:babel-core/register --timeout 20000",
-    "start": "nodemon ./server/Server.js --exec babel-node --presets es2015",
+    "start-old": "nodemon ./server/Server.js --exec babel-node --presets es2015",
+    "start-server": "node ./dist/server/Server.js",
+    "start": "npm run build && npm run start-server",
     "test-seed": "sequelize db:seed --seed 20170221112635-AccessTypes.js --env 'test'",
     "test-migrate": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
@@ -44,6 +47,7 @@
     "chai": "^3.5.0",
     "cors": "^2.8.1",
     "coveralls": "^2.11.16",
+    "dotenv": "^4.0.0",
     "express": "^4.14.1",
     "faker": "^4.0.0",
     "istanbul": "^1.0.0-alpha.2",

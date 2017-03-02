@@ -50,7 +50,7 @@ const Authentication = {
             req.adminType = role.name;
             next();
           } else {
-            return res.status(401)
+            return res.status(403)
             .send({
               message: 'Access forbidden, you do not have Admin rights' });
           }
