@@ -20,7 +20,7 @@ db.Roles.bulkCreate([
   SeedData.superAdminUser, SeedData.departmentAdminUser1,
   SeedData.departmentAdminUser2, SeedData.departmentAdminUser3,
   SeedData.regularUser1, SeedData.regularUser2
-]))
+], { individualHooks: true }))
 .then(() => db.Documents.bulkCreate([
   SeedData.privateDocument1, SeedData.privateDocument2,
   SeedData.privateDocument3, SeedData.privateDocument4,

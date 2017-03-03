@@ -4,7 +4,7 @@ import db from '../models';
 /**
  * Secret token for jsonwebtoken
  */
-const secret = process.env.SECRET || 'gibberish is the way to go';
+const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
 
 const Authentication = {
 
