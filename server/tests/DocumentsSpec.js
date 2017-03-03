@@ -211,7 +211,7 @@ describe('Document Tests', () => {
       });
     });
     it('should verify that user can access others public docs', (done) => {
-      request.get('/documents/4')
+      request.get('/documents/1')
       .set({ 'x-access-token': userOneToken })
       .end((err, res) => {
         expect(res.status).to.equal(200);

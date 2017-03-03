@@ -85,7 +85,7 @@ describe('Access Type Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -114,7 +114,7 @@ describe('Access Type Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -137,7 +137,7 @@ describe('Access Type Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -180,7 +180,7 @@ describe('Access Type Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });

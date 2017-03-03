@@ -57,6 +57,30 @@ const Authentication = {
         });
     });
   },
+  /**
+   * verifyAdmin - Verifies that the user role is supplied is an admin
+   *
+   * @param  {Object} req  Request Object
+   * @param  {Object} res  Response Object
+   * @param  {Object} next
+   * @returns {Object} Response Object
+   */
+  verifySuperAdmin(req, res, next) {
+    db.Users.findById(req.decoded.id)
+    .then((user) => {
+      db.Roles.findById(user.roleId)
+        .then((role) => {
+          role = role.dataValues;
+          if (role.name === 'superAdmin') {
+            next();
+          } else {
+            return res.status(403)
+            .send({
+              message: 'Forbidden, You do not have sufficient Admin rights' });
+          }
+        });
+    });
+  },
   validator(req, res, next) {
     db.Users.findById(req.decoded.id)
     .then((user) => {
