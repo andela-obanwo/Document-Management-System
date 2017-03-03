@@ -10,6 +10,13 @@
     "start-old": "nodemon ./server/Server.js --exec babel-node --presets es2015",
     "start-server": "node ./dist/server/Server.js",
     "start": "npm run build && npm run start-server",
+    "dev:setup":"npm run build && npm run dev:db:undo:migrate && npm run dev:db:migrate && npm run db:seed",
+    "setup":"npm run build && npm run db:undo:migrate && npm run db:migrate && npm run db:seed",
+    "dev:db:migrate":"sequelize db:migrate  --url 'postgres://docman:docman@127.0.0.1/database_development'",
+    "db:migrate":"sequelize db:migrate",
+    "dev:db:undo:migrate":"sequelize db:migrate:undo:all --url 'postgres://docman:docman@127.0.0.1/database_development'",
+    "db:undo:migrate":"sequelize db:migrate:undo:all",
+    "db:seed":"node ./dist/server/seeders/20170303063124-Initial-Data.js",
     "test-seed": "sequelize db:seed --seed 20170221112635-AccessTypes.js --env 'test'",
     "test-migrate": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
