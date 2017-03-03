@@ -173,12 +173,12 @@ describe('Document Tests', () => {
       });
     });
     it('should verify that deptAdmins access only department docs.', (done) => {
-      request.get('/documents/4')
+      request.get('/documents/1')
       .set({ 'x-access-token': departmentAdminToken })
       .end((err, res) => {
         expect(res.status).to.equal(404);
         expect(res.body.message)
-        .to.equal('Document with id: \'4\', is not available');
+        .to.equal('Document with id: \'1\', is not available');
         done();
       });
     });
