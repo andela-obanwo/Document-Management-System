@@ -2,15 +2,12 @@ const faker = require('faker');
 
 const data = {
   superAdminRole: {
-    id: 1,
     name: 'superAdmin'
   },
   departmentAdminRole: {
-    id: 2,
     name: 'departmentAdmin'
   },
   userRole: {
-    id: 3,
     name: 'user'
   },
   superAdminUser: {
@@ -208,39 +205,30 @@ const data = {
     userId: 3,
   },
   publicAccessType: {
-    id: 1,
     name: 'public'
   },
   privateAccessType: {
-    id: 2,
     name: 'private'
   },
   roleAccessType: {
-    id: 3,
     name: 'role'
   },
   department1: {
-    id: 1,
     name: 'technology'
   },
   department2: {
-    id: 2,
     name: 'sales',
   },
   department3: {
-    id: 3,
     name: 'marketing'
   },
   documentType1: {
-    id: 1,
     name: 'manual'
   },
   documentType2: {
-    id: 2,
     name: 'invoice'
   },
   documentType3: {
-    id: 3,
     name: 'report'
   },
 };
