@@ -22,18 +22,15 @@ Document Management System provides a restful API for users to create and manage
 1. Create a Postgresql database and run migrations `npm run db:migrate`.
 1. Start the express server `npm start`.
 1. Run tests `npm test`.
+1. Run `npm run setup` to populate database with initial data.
 
 ### Postman Collection
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/af275c0853c53335ae41)
+Postman Collection is available via https://www.getpostman.com/collections/5aec974d505573a93752)
 
-Create a Postman environment and set `url` and `token` variables or download and import a production environment from this [link][postman-env-link]
+## Demo
+A demo deployment is available at https://document-manager-api.herokuapp.com
 
-## Deployment
-Deploy this project to Heroku by clicking the button below.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/andela-obanwo/Document-Management-System)
-
-Set a `SECRET_TOKEN` environmet variable, and create a Postgresql add-on.
+Set a `SECRET_TOKEN` environment variable, and create a Postgresql add-on.
 
 ---
 
@@ -41,7 +38,7 @@ Set a `SECRET_TOKEN` environmet variable, and create a Postgresql add-on.
 The API has routes, each dedicated to a single task that uses HTTP response codes to indicate API status and errors.
 
 ## Authentication
-Users are assigned a token upon signup and signin. This token is needed for subsequent HTTP requests to the API for authentication and can be attached as values to the header's `x-acess-token` or `authorization` key. API requests made without authentication will fail.
+Users are assigned a token upon signup and signin. This token is needed for subsequent HTTP requests to the API for authentication and can be attached as values to the header's `x-access-token` or `authorization` key. API requests made without authentication will fail.
 
 ## Below are the API endpoints and their functions
 EndPoint                      |   Functionality
