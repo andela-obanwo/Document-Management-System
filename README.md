@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/andela-obanwo/Document-Management-System.svg?branch=develop)](https://travis-ci.org/andela-obanwo/Document-Management-System)
 [![Coverage Status](https://coveralls.io/repos/github/andela-obanwo/Document-Management-System/badge.svg?branch=feedback-implementation)](https://coveralls.io/github/andela-obanwo/Document-Management-System?branch=feedback-implementation)
+[![Code Climate](https://codeclimate.com/github/andela-obanwo/Document-Management-System/badges/gpa.svg)](https://codeclimate.com/github/andela-obanwo/Document-Management-System)
 
 Document Management System provides a restful API for users to create and manage documents giving different privileges based on user roles and managing authentication using JWT.
 
@@ -8,7 +9,7 @@ Document Management System provides a restful API for users to create and manage
 - Node.js
 - Express
 - Postgresql
-- Sequelize ORM.  
+- Sequelize ORM.
 
 ## Local Development
 ### Prerequisites includes
@@ -25,10 +26,10 @@ Document Management System provides a restful API for users to create and manage
 1. Run `npm run setup` to populate database with initial data.
 
 ### Postman Collection
-Postman Collection is available via https://www.getpostman.com/collections/5aec974d505573a93752)
+Postman Collection is available via [Postman Collection](https://www.getpostman.com/collections/5aec974d505573a93752)
 
 ## Demo
-A demo deployment is available at https://document-manager-api.herokuapp.com
+A demo deployment is available at [Demo](https://document-manager-api.herokuapp.com)
 
 Set a `SECRET_TOKEN` environment variable, and create a Postgresql add-on.
 
