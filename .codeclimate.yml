@@ -4,6 +4,9 @@ engines:
     channel: "eslint-2"
     config:
       config: .eslintrc
+    checks:
+      indent:
+        enabled: false
   duplication:
     enabled: true
     checks:
