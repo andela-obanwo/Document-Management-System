@@ -139,7 +139,7 @@ const DocumentsController = {
             message: 'Data fetched successfully'
           });
         }
-        res.status(401)
+        res.status(403)
         .send({ message: 'You are not authorized to view this content' });
       })
       .catch(err => res.status(400).send(err));
@@ -178,12 +178,12 @@ const DocumentsController = {
                 message: 'Document Updated Successfully'
               }));
           } else {
-            return res.status(401)
+            return res.status(403)
             .send({ message: 'Insufficient Privileges to edit' });
           }
         });
       } else {
-        return res.status(401)
+        return res.status(403)
         .send({ message: 'Insufficient Privileges to edit' });
       }
     })
@@ -220,12 +220,12 @@ const DocumentsController = {
             .then(() => res.status(200).send({
               message: 'Document deleted successfully' }));
           } else {
-            return res.status(401)
+            return res.status(403)
             .send({ message: 'Insufficient Privileges to delete' });
           }
         });
       } else {
-        return res.status(401)
+        return res.status(403)
         .send({ message: 'Insufficient Privileges to delete' });
       }
     })
@@ -244,35 +244,86 @@ const DocumentsController = {
     .catch(err => res.status(400).send(err));
   },
   searchDocuments(req, res) {
-    db.Documents.findAll({
+    const searchQuery = req.query.query;
+    let dbQuery;
+    let personal = {};
+    if (req.adminType === 'superAdmin') {
+      dbQuery = {
+        where: {
+          $or: [
+            {
+              title: {
+                $iLike: `%${searchQuery}%`
+              }
+            },
+            {
+              content: {
+                $iLike: `%${searchQuery}%`
+              }
+            }
+          ]
+        }
+      };
+    } else if (req.adminType === 'departmentAdmin') {
+      dbQuery = {
+        where: {
+          $or: [
+            {
+              title: {
+                $iLike: `%${searchQuery}%`
+              }
+            },
+            {
+              content: {
+                $iLike: `%${searchQuery}%`
+              }
+            }
+          ]
+        },
+        include: [{
+          model: db.Users,
+          where: { departmentId: req.decoded.departmentId }
+        }]
+      };
+    }
+    db.Documents.findAll({ where: { userId: req.decoded.id } })
+    .then((docs) => {
+      personal = docs;
+    });
+    dbQuery = {
       where: {
         $or: [
           {
             title: {
-              $iLike: `%${req.params.searchQuery}%`
+              $iLike: `%${searchQuery}%`
             }
           },
           {
-            title: {
-              $iLike: `%${req.params.searchQuery}`
-            }
-          },
-          {
-            title: {
-              $iLike: `${req.params.searchQuery}%`
+            content: {
+              $iLike: `%${searchQuery}%`
             }
           }
         ]
-      }
-    })
+      },
+      include: [{
+        model: db.AccessTypes,
+        where: { name: { $ne: 'private' } },
+      },
+      {
+        model: db.Users,
+        where: { departmentId: req.decoded.departmentId }
+      }]
+    };
+    db.Documents.findAll(dbQuery)
     .then((documents) => {
       if (!documents.length) {
-        return res.status(404)
+        return res.status(200)
         .send({ message: 'No Documents matching search found' });
+      } else if (req.adminType === 'user') {
+        return res.status(200).send({ main: documents, own: personal });
       }
       return res.status(200).send(documents);
-    })
-    .catch(err => res.status(400).send(err));
+    });
   }
 };
 

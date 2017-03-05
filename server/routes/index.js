@@ -4,6 +4,7 @@ import documentTypes from './DocumentTypes';
 import accessTypes from './AccessTypes';
 import departments from './Departments';
 import documents from './Documents';
+import search from './Search';
 
 export default (app) => {
   // Index route
@@ -17,4 +18,5 @@ export default (app) => {
   app.use('/documenttypes', documentTypes);
   app.use('/departments', departments);
   app.use('/documents', documents);
+  app.use('/search', search);
 };

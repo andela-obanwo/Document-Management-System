@@ -9,21 +9,16 @@ const DocumentTypesController = {
    * @returns {void} no returns
    */
   fetchAll(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.DocumentTypes.findAll({
-        attributes: [
-          'id',
-          'name',
-          'createdAt',
-          'updatedAt'
-        ]
-      }).then((documenttypes) => {
-        res.send(documenttypes);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    db.DocumentTypes.findAll({
+      attributes: [
+        'id',
+        'name',
+        'createdAt',
+        'updatedAt'
+      ]
+    }).then((documenttypes) => {
+      res.send(documenttypes);
+    });
   },
 
   /**
@@ -34,29 +29,24 @@ const DocumentTypesController = {
    * @returns {Response|void} response object or void
    */
   create(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.DocumentTypes.findOne({ where: { name: req.body.name } })
-      .then((documentTypeExists) => {
-        if (documentTypeExists) {
-          return res.status(409)
-          .send({ message: `'${req.body.name}' already exists` });
-        }
+    db.DocumentTypes.findOne({ where: { name: req.body.name } })
+    .then((documentTypeExists) => {
+      if (documentTypeExists) {
+        return res.status(409)
+        .send({ message: `'${req.body.name}' already exists` });
+      }
 
-        db.DocumentTypes.create(req.body)
-        .then((documentType) => {
-          res.status(201).send({
-            message: `DocumentType ${req.body.name} successfully created`,
-            documentType
-          });
-        })
-        .catch((err) => {
-          res.status(400).send(err);
+      db.DocumentTypes.create(req.body)
+      .then((documentType) => {
+        res.status(201).send({
+          message: `DocumentType ${req.body.name} successfully created`,
+          documentType
         });
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    });
   },
 
   /**
@@ -67,27 +57,22 @@ const DocumentTypesController = {
    * @returns {Response|void} response object or void
    */
   edit(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.DocumentTypes.findById(req.params.id)
-      .then((documentType) => {
-        if (!documentType) {
-          return res.status(404)
-          .send({ message: 'DocumentType not found' });
-        }
+    db.DocumentTypes.findById(req.params.id)
+    .then((documentType) => {
+      if (!documentType) {
+        return res.status(404)
+        .send({ message: 'DocumentType not found' });
+      }
 
-        documentType.update(req.body)
-          .then((updatedDocumentType) => {
-            res.status(200)
-            .send({ message: 'Update Successful', updatedDocumentType });
-          });
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+      documentType.update(req.body)
+        .then((updatedDocumentType) => {
+          res.status(200)
+          .send({ message: 'Update Successful', updatedDocumentType });
+        });
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
   },
 
   /**
@@ -98,25 +83,20 @@ const DocumentTypesController = {
    * @returns {Response|void} response object or void
    */
   destroy(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.DocumentTypes.findById(req.params.id)
-      .then((documentType) => {
-        if (!documentType) {
-          return res.status(404)
-          .send({ message: 'DocumentType not found' });
-        }
+    db.DocumentTypes.findById(req.params.id)
+    .then((documentType) => {
+      if (!documentType) {
+        return res.status(404)
+        .send({ message: 'DocumentType not found' });
+      }
 
-        documentType.destroy()
-        .then(() => res.status(200)
-        .send({ message: 'DocumentType deleted successfully.' }));
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+      documentType.destroy()
+      .then(() => res.status(200)
+      .send({ message: 'DocumentType deleted successfully.' }));
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
   }
 };
 

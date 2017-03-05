@@ -1,7 +1,7 @@
 import chai from 'chai';
 import Request from 'supertest';
 import app from '../app';
-import testData from './testData';
+import testData from './TestData';
 import db from '../models';
 
 const request = Request.agent(app);
@@ -17,24 +17,20 @@ describe('Document Type Tests', () => {
   });
   before((done) => {
     db.Roles.bulkCreate([testData.superAdminRole, testData.departmentAdminRole])
+    .then(() => db.Departments.bulkCreate([
+      testData.department1,
+      testData.department2
+    ]))
+    .then(() => db.Users.bulkCreate([
+      superAdmin,
+      departmentAdmin
+    ], { individualHooks: true }))
     .then(() => {
-      db.Departments.bulkCreate([
-        testData.department1,
-        testData.department2
-      ])
-      .then(() => {
-        db.Users.bulkCreate([
-          superAdmin,
-          departmentAdmin
-        ], { individualHooks: true })
-        .then(() => {
-          request.post('/users/login')
-          .send(superAdmin)
-          .end((err, res) => {
-            superAdminToken = res.body.token;
-            done();
-          });
-        });
+      request.post('/users/login')
+      .send(superAdmin)
+      .end((err, res) => {
+        superAdminToken = res.body.token;
+        done();
       });
     });
   });
@@ -76,9 +72,9 @@ describe('Document Type Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.documentType1)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -105,9 +101,9 @@ describe('Document Type Tests', () => {
       request.get('/documenttypes')
       .set({ 'x-access-token': departmentAdminToken })
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -128,9 +124,9 @@ describe('Document Type Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.documentType1)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -171,9 +167,9 @@ describe('Document Type Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.documentType1)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });

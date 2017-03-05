@@ -5,15 +5,15 @@ import AccessTypesController from '../controllers/AccessTypes';
 const router = express.Router();
 
 router.route('/')
-.get(Authentication.verifyToken, Authentication.verifyAdmin,
+.get(Authentication.verifyToken, Authentication.verifySuperAdmin,
   AccessTypesController.fetchAll)
-.post(Authentication.verifyToken, Authentication.verifyAdmin,
+.post(Authentication.verifyToken, Authentication.verifySuperAdmin,
   AccessTypesController.create);
 
 router.route('/:id')
-.put(Authentication.verifyToken, Authentication.verifyAdmin,
+.put(Authentication.verifyToken, Authentication.verifySuperAdmin,
   AccessTypesController.edit)
-.delete(Authentication.verifyToken, Authentication.verifyAdmin,
+.delete(Authentication.verifyToken, Authentication.verifySuperAdmin,
   AccessTypesController.destroy);
 
 export default router;

@@ -1,7 +1,7 @@
 import chai from 'chai';
 import Request from 'supertest';
 import app from '../app';
-import testData from './testData';
+import testData from './TestData';
 import db from '../models';
 
 const request = Request.agent(app);
@@ -76,9 +76,9 @@ describe('Role Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.userRole)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -105,9 +105,9 @@ describe('Role Tests', () => {
       request.get('/roles')
       .set({ 'x-access-token': departmentAdminToken })
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -128,9 +128,9 @@ describe('Role Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.userRole)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -171,9 +171,9 @@ describe('Role Tests', () => {
       .set({ 'x-access-token': departmentAdminToken })
       .send(testData.userRole)
       .end((err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });

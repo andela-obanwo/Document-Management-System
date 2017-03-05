@@ -4,7 +4,7 @@ import db from '../models';
 /**
  * Secret token for jsonwebtoken
  */
-const secret = process.env.SECRET || 'gibberish is the way to go';
+const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
 
 const Authentication = {
 
@@ -50,9 +50,33 @@ const Authentication = {
             req.adminType = role.name;
             next();
           } else {
-            return res.status(401)
+            return res.status(403)
             .send({
               message: 'Access forbidden, you do not have Admin rights' });
+          }
+        });
+    });
+  },
+  /**
+   * verifyAdmin - Verifies that the user role is supplied is an admin
+   *
+   * @param  {Object} req  Request Object
+   * @param  {Object} res  Response Object
+   * @param  {Object} next
+   * @returns {Object} Response Object
+   */
+  verifySuperAdmin(req, res, next) {
+    db.Users.findById(req.decoded.id)
+    .then((user) => {
+      db.Roles.findById(user.roleId)
+        .then((role) => {
+          role = role.dataValues;
+          if (role.name === 'superAdmin') {
+            next();
+          } else {
+            return res.status(403)
+            .send({
+              message: 'Forbidden, You do not have sufficient Admin rights' });
           }
         });
     });

@@ -9,21 +9,16 @@ const AccessTypesController = {
    * @returns {void} no returns
    */
   fetchAll(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.AccessTypes.findAll({
-        attributes: [
-          'id',
-          'name',
-          'createdAt',
-          'updatedAt'
-        ]
-      }).then((accessTypes) => {
-        res.status(200).send(accessTypes);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    db.AccessTypes.findAll({
+      attributes: [
+        'id',
+        'name',
+        'createdAt',
+        'updatedAt'
+      ]
+    }).then((accessTypes) => {
+      res.status(200).send(accessTypes);
+    });
   },
 
   /**
@@ -34,29 +29,24 @@ const AccessTypesController = {
    * @returns {Response|void} response object or void
    */
   create(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.AccessTypes.findOne({ where: { name: req.body.name } })
-      .then((accessTypeExists) => {
-        if (accessTypeExists) {
-          return res.status(409)
-          .send({ message: `'${req.body.name}' already exists` });
-        }
+    db.AccessTypes.findOne({ where: { name: req.body.name } })
+    .then((accessTypeExists) => {
+      if (accessTypeExists) {
+        return res.status(409)
+        .send({ message: `'${req.body.name}' already exists` });
+      }
 
-        db.AccessTypes.create(req.body)
-        .then((accessType) => {
-          res.status(201).send({
-            message: `AccessType ${req.body.name} successfully created`,
-            accessType
-          });
-        })
-        .catch((err) => {
-          res.status(400).send(err);
+      db.AccessTypes.create(req.body)
+      .then((accessType) => {
+        res.status(201).send({
+          message: `AccessType ${req.body.name} successfully created`,
+          accessType
         });
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    });
   },
 
   /**
@@ -67,27 +57,22 @@ const AccessTypesController = {
    * @returns {Response|void} response object or void
    */
   edit(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.AccessTypes.findById(req.params.id)
-      .then((accessType) => {
-        if (!accessType) {
-          return res.status(404)
-          .send({ message: 'AccessType not found' });
-        }
+    db.AccessTypes.findById(req.params.id)
+    .then((accessType) => {
+      if (!accessType) {
+        return res.status(404)
+        .send({ message: 'AccessType not found' });
+      }
 
-        accessType.update(req.body)
-          .then((updatedAccessType) => {
-            res.status(200)
-            .send({ message: 'Update Successful', updatedAccessType });
-          });
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+      accessType.update(req.body)
+        .then((updatedAccessType) => {
+          res.status(200)
+          .send({ message: 'Update Successful', updatedAccessType });
+        });
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
   },
 
   /**
@@ -98,25 +83,20 @@ const AccessTypesController = {
    * @returns {Response|void} response object or void
    */
   destroy(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.AccessTypes.findById(req.params.id)
-      .then((accessType) => {
-        if (!accessType) {
-          return res.status(404)
-          .send({ message: 'AccessType not found' });
-        }
+    db.AccessTypes.findById(req.params.id)
+    .then((accessType) => {
+      if (!accessType) {
+        return res.status(404)
+        .send({ message: 'AccessType not found' });
+      }
 
-        accessType.destroy()
-        .then(() => res.status(200)
-        .send({ message: 'AccessType deleted successfully.' }));
-      })
-      .catch((err) => {
-        res.status(400).send(err);
-      });
-    } else {
-      return res.status(401)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+      accessType.destroy()
+      .then(() => res.status(200)
+      .send({ message: 'AccessType deleted successfully.' }));
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
   }
 };
 
