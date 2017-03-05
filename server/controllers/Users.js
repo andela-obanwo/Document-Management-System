@@ -2,6 +2,28 @@ import jwt from 'jsonwebtoken';
 import db from '../models';
 
 const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
+const userAttributes = [
+  'id',
+  'username',
+  'firstname',
+  'lastname',
+  'email',
+  'roleId',
+  'departmentId',
+  'createdAt',
+  'updatedAt'
+];
+const createToken = user => jwt.sign({
+  id: user.id,
+  username: user.username,
+  firstname: user.firstname,
+  lastname: user.lastname,
+  email: user.email,
+  departmentId: user.departmentId
+}, secret, { expiresIn: '120m' });
+
+const notOwner = req => req.adminType !== 'superAdmin'
+&& parseInt(req.params.id, 10) !== parseInt(req.decoded.id, 10);
 
 const UsersController = {
   /**
@@ -14,34 +36,14 @@ const UsersController = {
   fetchAll(req, res) {
     if (req.adminType === 'superAdmin') {
       return db.Users.findAll({
-        attributes: [
-          'id',
-          'username',
-          'firstname',
-          'lastname',
-          'email',
-          'roleId',
-          'departmentId',
-          'createdAt',
-          'updatedAt'
-        ]
+        attributes: userAttributes
       }).then(users => res.status(200).send({
         data: users,
         message: 'All user data returned'
       }));
     } else if (req.adminType === 'departmentAdmin') {
       return db.Users.findAll({
-        attributes: [
-          'id',
-          'username',
-          'firstname',
-          'lastname',
-          'email',
-          'roleId',
-          'departmentId',
-          'createdAt',
-          'updatedAt'
-        ],
+        attributes: userAttributes,
         where: { departmentId: req.decoded.departmentId }
       }).then(users => res.status(200).send({
         data: users,
@@ -84,15 +86,7 @@ const UsersController = {
       }
       db.Users.create(req.body)
       .then((user) => {
-        const token = jwt.sign(
-          {
-            id: user.id,
-            username: user.username,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            departmentId: user.departmentId
-          }, secret, { expiresIn: '120m' });
+        const token = createToken(user);
 
         res.status(201).send({
           message: 'User successfully created',
@@ -143,8 +137,7 @@ const UsersController = {
    * @returns {Response|void} response object or void
    */
   fetchOne(req, res) {
-    if (req.adminType !== 'superAdmin'
-    && parseInt(req.params.id, 10) !== parseInt(req.decoded.id, 10)) {
+    if (notOwner(req)) {
       return res.status(403)
       .send({ message: 'You are unauthorized to access this route' });
     }
@@ -174,8 +167,7 @@ const UsersController = {
       if (!user) {
         return res.status(404)
         .send({ message: 'User not found' });
-      } else if (req.adminType !== 'superAdmin'
-        && parseInt(req.params.id, 10) !== parseInt(req.decoded.id, 10)) {
+      } else if (notOwner(req)) {
         return res.status(403)
         .send({ message: 'You are not allowed to edit this user' });
       } else if (req.adminType !== 'superAdmin'
@@ -241,14 +233,7 @@ const UsersController = {
     .then((user) => {
       if (user && user.validPassword(req.body.password)) {
         user = user.dataValues;
-        const token = jwt.sign({
-          id: user.id,
-          username: user.username,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          email: user.email,
-          departmentId: user.departmentId
-        }, secret, { expiresIn: '120m' });
+        const token = createToken(user);
         res.send({ token, expiresIn: '120m' });
       } else {
         res.status(401)

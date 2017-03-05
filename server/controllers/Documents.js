@@ -154,6 +154,10 @@ const DocumentsController = {
    * @returns {Response|void} response object or void
    */
   edit(req, res) {
+    const documentUpdater = (res, updatedDocument) => res.status(200).send({
+      data: updatedDocument,
+      message: 'Document Updated Successfully'
+    });
     db.Documents.findById(req.params.id)
     .then((document) => {
       if (!document) {
@@ -162,10 +166,7 @@ const DocumentsController = {
       } else if (document.userId === req.decoded.id
         || req.adminType === 'superAdmin') {
         document.update(req.body)
-        .then(updatedDocument => res.status(200).send({
-          data: updatedDocument,
-          message: 'Document Updated Successfully'
-        }));
+        .then(updatedDocument => documentUpdater(res, updatedDocument));
       } else if (req.adminType === 'departmentAdmin') {
         db.Users.find({
           where: { id: document.userId }
@@ -173,10 +174,7 @@ const DocumentsController = {
         .then((user) => {
           if (user.departmentId === req.decoded.departmentId) {
             document.update(req.body)
-              .then(updatedDocument => res.status(200).send({
-                data: updatedDocument,
-                message: 'Document Updated Successfully'
-              }));
+              .then(updatedDocument => documentUpdater(res, updatedDocument));
           } else {
             return res.status(403)
             .send({ message: 'Insufficient Privileges to edit' });
@@ -200,6 +198,13 @@ const DocumentsController = {
    * @returns {Response|void} response object or void
    */
   destroy(req, res) {
+    const documentDestroy = document => document.destroy()
+    .then(() => res.status(200)
+    .send({ message: 'Document deleted successfully' }));
+
+    const noDeletePrivileges = () => res.status(403)
+    .send({ message: 'Insufficient Privileges to delete' });
+
     db.Documents.findById(parseInt(req.params.id, 10))
     .then((document) => {
       if (!document) {
@@ -207,26 +212,20 @@ const DocumentsController = {
         .send({ message: `Document with id: ${req.params.id} not found` });
       } else if (document.userId === req.decoded.id
         || req.adminType === 'superAdmin') {
-        document.destroy()
-        .then(() => res.status(200)
-        .send({ message: 'Document deleted successfully' }));
+        documentDestroy(document);
       } else if (req.adminType === 'departmentAdmin') {
         db.Users.find({
           where: { id: document.userId }
         })
         .then((user) => {
           if (user.departmentId === req.decoded.departmentId) {
-            document.destroy()
-            .then(() => res.status(200).send({
-              message: 'Document deleted successfully' }));
+            documentDestroy(document);
           } else {
-            return res.status(403)
-            .send({ message: 'Insufficient Privileges to delete' });
+            return noDeletePrivileges();
           }
         });
       } else {
-        return res.status(403)
-        .send({ message: 'Insufficient Privileges to delete' });
+        return noDeletePrivileges();
       }
     })
     .catch((err) => {
@@ -247,39 +246,27 @@ const DocumentsController = {
     const searchQuery = req.query.query;
     let dbQuery;
     let personal = {};
+    const whereCondition = {
+      $or: [
+        {
+          title: {
+            $iLike: `%${searchQuery}%`
+          }
+        },
+        {
+          content: {
+            $iLike: `%${searchQuery}%`
+          }
+        }
+      ]
+    };
     if (req.adminType === 'superAdmin') {
       dbQuery = {
-        where: {
-          $or: [
-            {
-              title: {
-                $iLike: `%${searchQuery}%`
-              }
-            },
-            {
-              content: {
-                $iLike: `%${searchQuery}%`
-              }
-            }
-          ]
-        }
+        where: whereCondition
       };
     } else if (req.adminType === 'departmentAdmin') {
       dbQuery = {
-        where: {
-          $or: [
-            {
-              title: {
-                $iLike: `%${searchQuery}%`
-              }
-            },
-            {
-              content: {
-                $iLike: `%${searchQuery}%`
-              }
-            }
-          ]
-        },
+        where: whereCondition,
         include: [{
           model: db.Users,
           where: { departmentId: req.decoded.departmentId }
@@ -291,20 +278,7 @@ const DocumentsController = {
       personal = docs;
     });
     dbQuery = {
-      where: {
-        $or: [
-          {
-            title: {
-              $iLike: `%${searchQuery}%`
-            }
-          },
-          {
-            content: {
-              $iLike: `%${searchQuery}%`
-            }
-          }
-        ]
-      },
+      where: whereCondition,
       include: [{
         model: db.AccessTypes,
         where: { name: { $ne: 'private' } },
