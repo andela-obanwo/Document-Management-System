@@ -6,7 +6,7 @@ const AccessTypesController = {
    * Route: GET: /accesstypes
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     db.AccessTypes.findAll({
@@ -26,7 +26,7 @@ const AccessTypesController = {
    * Route: POST: /accesstypes
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     db.AccessTypes.findOne({ where: { name: req.body.name } })
@@ -54,7 +54,7 @@ const AccessTypesController = {
    * Route: PUT: /accesstypes/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     db.AccessTypes.findById(req.params.id)
@@ -80,7 +80,7 @@ const AccessTypesController = {
    * Route: DELETE: /accesstypes/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     db.AccessTypes.findById(req.params.id)

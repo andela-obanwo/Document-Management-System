@@ -6,7 +6,7 @@ const DocumentsController = {
    * Route: GET: /documents
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     if (req.adminType === 'superAdmin') {
@@ -60,7 +60,7 @@ const DocumentsController = {
    * Route: POST: /documents
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     req.body.userId = req.decoded.id;
@@ -81,7 +81,7 @@ const DocumentsController = {
    * Route: GET: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   fetchOne(req, res) {
     if (req.adminType === 'superAdmin') {
@@ -151,7 +151,7 @@ const DocumentsController = {
    * Route: PUT: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     const documentUpdater = (res, updatedDocument) => res.status(200).send({
@@ -195,7 +195,7 @@ const DocumentsController = {
    * Route: DELETE: /documents/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     const documentDestroy = document => document.destroy()
@@ -233,15 +233,61 @@ const DocumentsController = {
     });
   },
 
+  /**
+   * Fetch a single user's documents
+   * Route: GET: /users/:id/documents
+   * @param {Object} req request object
+   * @param {Object} res response object
+   * @returns {Response} response object
+   */
   fetchUserDocuments(req, res) {
-    db.Documents.findAll({
-      where: {
-        userId: req.params.id
-      }
-    })
-    .then(documents => res.status(200).send(documents))
-    .catch(err => res.status(400).send(err));
+    const fetcher = findQuery => db.Users.findAll(findQuery)
+      .then((userDocs) => {
+        if (!userDocs.length) {
+          return res.status(404).send({ message: 'No Data Found' });
+        }
+        res.status(200).send(userDocs);
+      })
+      .catch(err => res.status(400).send(err));
+
+    let findQuery;
+    if (req.adminType === 'superAdmin'
+    || parseInt(req.params.id, 10) === parseInt(req.decoded.id, 10)) {
+      findQuery = {
+        where: {
+          id: req.params.id
+        },
+        include: [{
+          model: db.Documents,
+          where: { userId: req.params.id }
+        }]
+      };
+      return fetcher(findQuery);
+    } else if (req.adminType === 'departmentAdmin') {
+      findQuery = {
+        where: {
+          id: req.params.id,
+          departmentId: req.decoded.departmentId
+        },
+        include: [{
+          model: db.Documents,
+          where: { userId: req.params.id }
+        }]
+      };
+      return fetcher(findQuery);
+    }
+    return res.status(403)
+    .send({ message:
+      'You are not allowed to access this user\'s documents' });
   },
+
+  /**
+   * Fetch all documents that match a search query
+   * Route: GET: /search/documents?query='searchQuery'
+   * @param {Object} req request object
+   * @param {Object} res response object
+   * @returns {Response} response object
+   */
   searchDocuments(req, res) {
     const searchQuery = req.query.query;
     let dbQuery;

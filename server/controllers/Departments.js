@@ -6,7 +6,7 @@ const DepartmentsController = {
    * Route: GET: /departments
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     db.Departments.findAll({
@@ -26,7 +26,7 @@ const DepartmentsController = {
    * Route: POST: /departments
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     db.Departments.findOne({ where: { name: req.body.name } })
@@ -54,7 +54,7 @@ const DepartmentsController = {
    * Route: PUT: /departments/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     db.Departments.findById(req.params.id)
@@ -79,7 +79,7 @@ const DepartmentsController = {
    * Route: DELETE: /departments/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     db.Departments.findById(req.params.id)

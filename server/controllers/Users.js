@@ -31,7 +31,7 @@ const UsersController = {
    * Route: GET: /users
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     if (req.adminType === 'superAdmin') {
@@ -68,7 +68,7 @@ const UsersController = {
    * Route: POST: /users
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     db.Users.findOne({ where: { email: req.body.email } })
@@ -101,7 +101,7 @@ const UsersController = {
    * Route: POST: /users/createadmin
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   createAdmin(req, res) {
     if (req.adminType === 'superAdmin') {
@@ -134,7 +134,7 @@ const UsersController = {
    * Route: GET: /users/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   fetchOne(req, res) {
     if (notOwner(req)) {
@@ -159,7 +159,7 @@ const UsersController = {
    * Route: PUT: /users/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     db.Users.findById(req.params.id)
@@ -194,7 +194,7 @@ const UsersController = {
    * Route: DELETE: /users/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     if (req.adminType === 'superAdmin') {
@@ -226,7 +226,7 @@ const UsersController = {
    * Route: POST: /users/login
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   login(req, res) {
     db.Users.findOne({ where: { email: req.body.email } })

@@ -6,7 +6,7 @@ const DocumentTypesController = {
    * Route: GET: /documenttypes
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     db.DocumentTypes.findAll({
@@ -26,7 +26,7 @@ const DocumentTypesController = {
    * Route: POST: /documenttypes
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     db.DocumentTypes.findOne({ where: { name: req.body.name } })
@@ -54,7 +54,7 @@ const DocumentTypesController = {
    * Route: PUT: /documenttypes/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     db.DocumentTypes.findById(req.params.id)
@@ -80,7 +80,7 @@ const DocumentTypesController = {
    * Route: DELETE: /documenttypes/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     db.DocumentTypes.findById(req.params.id)
