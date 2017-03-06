@@ -146,7 +146,7 @@ const data = {
     content: faker.lorem.paragraph(),
     accessTypeId: 1,
     docTypeId: 2,
-    userId: 3,
+    userId: 5,
   },
   publicDocument1: {
     title: 'we give you praise forever',
@@ -174,7 +174,7 @@ const data = {
     content: faker.lorem.paragraph(),
     accessTypeId: 2,
     docTypeId: 2,
-    userId: 4,
+    userId: 5,
   },
   privateDocument4: {
     title: faker.company.catchPhrase(),

@@ -440,17 +440,55 @@ describe('Document Tests', () => {
     });
   });
   describe('Fetch Users Documents', () => {
-    it('should find a document match for search query', (done) => {
+    it('should find document match(es) for specified user (superAdmin)',
+    (done) => {
       request.get('/users/3/documents')
-      .set({ 'x-access-token': userTwoToken })
+      .set({ 'x-access-token': superAdminToken })
       .end((err, res) => {
         expect(res.status).to.equal(200);
         done();
       });
     });
-    it('should handle error scenarios', (done) => {
-      request.get('/users/search/documents')
+    it('should find document match(es) for specified user (deptAdmin)',
+    (done) => {
+      request.get('/users/3/documents')
+      .set({ 'x-access-token': departmentAdminToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
+    it('should return 404 for no user or no documents)',
+    (done) => {
+      request.get('/users/30/documents')
+      .set({ 'x-access-token': superAdminToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(404);
+        expect(res.body.message).to.equal('No Data Found');
+        done();
+      });
+    });
+    it('should find document match(es) for specified user (owner)',
+    (done) => {
+      request.get('/users/3/documents')
+      .set({ 'x-access-token': userOneToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
+    it('should check non-admins and non-owners are denied access',
+    (done) => {
+      request.get('/users/3/documents')
       .set({ 'x-access-token': userTwoToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        done();
+      });
+    });
+    it('should handle error scenarios', (done) => {
+      request.get('/users/strrr/documents')
+      .set({ 'x-access-token': superAdminToken })
       .end((err, res) => {
         expect(res.status).to.equal(400);
         done();

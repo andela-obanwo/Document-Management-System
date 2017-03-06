@@ -6,7 +6,7 @@ const RolesController = {
    * Route: GET: /roles
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Response} response object
    */
   fetchAll(req, res) {
     db.Roles.findAll({
@@ -26,7 +26,7 @@ const RolesController = {
    * Route: POST: /roles
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   create(req, res) {
     db.Roles.findOne({ where: { name: req.body.name } })
@@ -53,7 +53,7 @@ const RolesController = {
    * Route: PUT: /roles/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   edit(req, res) {
     db.Roles.findById(req.params.id)
@@ -79,7 +79,7 @@ const RolesController = {
    * Route: DELETE: /roles/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Response} response object
    */
   destroy(req, res) {
     db.Roles.findById(req.params.id)

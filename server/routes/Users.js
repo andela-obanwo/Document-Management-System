@@ -18,7 +18,7 @@ router.route('/:id')
   Authentication.validator, UsersController.destroy);
 
 router.get('/:id/documents', Authentication.verifyToken,
-  DocumentsController.fetchUserDocuments);
+Authentication.validator, DocumentsController.fetchUserDocuments);
 
 router.post('/createadmin', Authentication.verifyToken,
   Authentication.verifyAdmin, UsersController.createAdmin);
