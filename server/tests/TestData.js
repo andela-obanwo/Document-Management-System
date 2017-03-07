@@ -127,6 +127,16 @@ const data = {
     roleId: 3,
     departmentId: 4
   },
+  noIdUser: {
+    id: 5,
+    username: null,
+    firstname: faker.name.firstName(),
+    lastname: faker.name.lastName(),
+    email: 'a@a.com',
+    password: faker.internet.password(),
+    roleId: 3,
+    departmentId: 4
+  },
   publicDocument4: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph(),

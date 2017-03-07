@@ -5,15 +5,15 @@ import DepartmentsController from '../controllers/Departments';
 const router = express.Router();
 
 router.route('/')
-.get(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DepartmentsController.fetchAll)
-.post(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DepartmentsController.create);
+.get(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, DepartmentsController.fetchAll)
+.post(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, DepartmentsController.create);
 
 router.route('/:id')
-.put(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DepartmentsController.edit)
-.delete(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DepartmentsController.destroy);
+.put(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, DepartmentsController.edit)
+.delete(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, DepartmentsController.destroy);
 
 export default router;

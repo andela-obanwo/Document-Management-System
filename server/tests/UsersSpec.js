@@ -164,7 +164,7 @@ describe('User Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are unauthorized to access this route');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -175,7 +175,7 @@ describe('User Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('Access forbidden, you do not have Admin rights');
+        .to.equal('Forbidden, You do not have sufficient Admin rights');
         done();
       });
     });
@@ -419,6 +419,18 @@ describe('User Tests', () => {
         expect(res.status).to.equal(200);
         expect(res.body.message)
         .to.equal('Logout successful.');
+        done();
+      });
+    });
+  });
+  describe('Check for ID', () => {
+    it('should check for id field in request body', (done) => {
+      request.post('/users')
+      .send(testData.noIdUser)
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        expect(res.body.message)
+        .to.equal('You must not pass in "id"');
         done();
       });
     });

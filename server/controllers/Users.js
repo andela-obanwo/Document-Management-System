@@ -104,29 +104,24 @@ const UsersController = {
    * @returns {Response} response object
    */
   createAdmin(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.Users.findOne({ where: { email: req.body.email } })
-      .then((userExists) => {
-        if (userExists) {
-          return res.status(409)
-          .send({
-            message: `User with email: ${req.body.email} already exists` });
-        }
-        db.Users.create(req.body)
-        .then((user) => {
-          res.status(201).send({
-            user,
-            message: 'User successfully created'
-          });
-        })
-        .catch((err) => {
-          res.status(400).send(err);
+    db.Users.findOne({ where: { email: req.body.email } })
+    .then((userExists) => {
+      if (userExists) {
+        return res.status(409)
+        .send({
+          message: `User with email: ${req.body.email} already exists` });
+      }
+      db.Users.create(req.body)
+      .then((user) => {
+        res.status(201).send({
+          user,
+          message: 'User successfully created'
         });
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
-    } else {
-      return res.status(403)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    });
   },
 
   /**
