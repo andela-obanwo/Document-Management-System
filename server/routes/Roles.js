@@ -5,15 +5,15 @@ import RolesController from '../controllers/Roles';
 const router = express.Router();
 
 router.route('/')
-.get(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  RolesController.fetchAll)
-.post(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  RolesController.create);
+.get(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, RolesController.fetchAll)
+.post(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, RolesController.create);
 
 router.route('/:id')
-.put(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  RolesController.edit)
-.delete(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  RolesController.destroy);
+.put(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, RolesController.edit)
+.delete(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, RolesController.destroy);
 
 export default router;

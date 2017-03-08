@@ -78,10 +78,9 @@ const UsersController = {
         .send({ message: `User with email: ${req.body.email} already exists` });
       }
       // Restrict non super Admin from creating an Admin user
-      if (parseInt(req.body.roleId, 10) === 2
-      || parseInt(req.body.roleId, 10) === 1) {
+      if (req.body.roleId) {
         return res.status(403).send({
-          message: 'You are not allowed to create an Admin user'
+          message: 'You are not allowed to specify a role'
         });
       }
       db.Users.create(req.body)
@@ -89,6 +88,17 @@ const UsersController = {
         const token = createToken(user);
 
         res.status(201).send({
+          data: {
+            id: user.id,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            roleId: user.roleId,
+            departmentId: user.departmentId,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+          },
           message: 'User successfully created',
           token,
           expiresIn: '120m' });
@@ -104,29 +114,34 @@ const UsersController = {
    * @returns {Response} response object
    */
   createAdmin(req, res) {
-    if (req.adminType === 'superAdmin') {
-      db.Users.findOne({ where: { email: req.body.email } })
-      .then((userExists) => {
-        if (userExists) {
-          return res.status(409)
-          .send({
-            message: `User with email: ${req.body.email} already exists` });
-        }
-        db.Users.create(req.body)
-        .then((user) => {
-          res.status(201).send({
-            user,
-            message: 'User successfully created'
-          });
-        })
-        .catch((err) => {
-          res.status(400).send(err);
+    db.Users.findOne({ where: { email: req.body.email } })
+    .then((userExists) => {
+      if (userExists) {
+        return res.status(409)
+        .send({
+          message: `User with email: ${req.body.email} already exists` });
+      }
+      db.Users.create(req.body)
+      .then((user) => {
+        res.status(201).send({
+          data: {
+            id: user.id,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            roleId: user.roleId,
+            departmentId: user.departmentId,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+          },
+          message: 'User successfully created'
         });
+      })
+      .catch((err) => {
+        res.status(400).send(err);
       });
-    } else {
-      return res.status(403)
-      .send({ message: 'You are unauthorized to access this route' });
-    }
+    });
   },
 
   /**
@@ -171,15 +186,24 @@ const UsersController = {
         return res.status(403)
         .send({ message: 'You are not allowed to edit this user' });
       } else if (req.adminType !== 'superAdmin'
-        && (parseInt(req.body.roleId, 10) === 1
-        || parseInt(req.body.roleId, 10) === 2)) {
+        && req.body.roleId && parseInt(req.body.roleId, 10) !== user.roleId) {
         return res.status(403)
-        .send({ message: 'You cannot assign yourself Admin rights' });
+        .send({ message: 'You cannot edit your role' });
       }
       user.update(req.body)
         .then((updatedUser) => {
           res.status(200).send({
-            data: updatedUser,
+            data: {
+              id: updatedUser.id,
+              username: updatedUser.username,
+              firstname: updatedUser.firstname,
+              lastname: updatedUser.lastname,
+              email: updatedUser.email,
+              roleId: updatedUser.roleId,
+              departmentId: updatedUser.departmentId,
+              createdAt: updatedUser.createdAt,
+              updatedAt: updatedUser.updatedAt
+            },
             message: 'User updated successfully'
           });
         });
@@ -234,7 +258,20 @@ const UsersController = {
       if (user && user.validPassword(req.body.password)) {
         user = user.dataValues;
         const token = createToken(user);
-        res.send({ token, expiresIn: '120m' });
+        res.send({
+          data: {
+            id: user.id,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            roleId: user.roleId,
+            departmentId: user.departmentId,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+          },
+          token,
+          expiresIn: '120m' });
       } else {
         res.status(401)
         .send({ message: 'Failed to authenticate.' });

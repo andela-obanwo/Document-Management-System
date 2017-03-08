@@ -33,32 +33,7 @@ const Authentication = {
   },
 
   /**
-   * verifyAdmin - Verifies that the user role is supplied is an admin
-   *
-   * @param  {Object} req  Request Object
-   * @param  {Object} res  Response Object
-   * @param  {Object} next
-   * @returns {Object} Response Object
-   */
-  verifyAdmin(req, res, next) {
-    db.Users.findById(req.decoded.id)
-    .then((user) => {
-      db.Roles.findById(user.roleId)
-        .then((role) => {
-          role = role.dataValues;
-          if (role.name === 'departmentAdmin' || role.name === 'superAdmin') {
-            req.adminType = role.name;
-            next();
-          } else {
-            return res.status(403)
-            .send({
-              message: 'Access forbidden, you do not have Admin rights' });
-          }
-        });
-    });
-  },
-  /**
-   * verifyAdmin - Verifies that the user role is supplied is an admin
+   * verifySuperAdmin - Verifies that the user role supplied is a superAdmin
    *
    * @param  {Object} req  Request Object
    * @param  {Object} res  Response Object
@@ -81,6 +56,15 @@ const Authentication = {
         });
     });
   },
+
+  /**
+   * validator - Verifies Admin Status/Type
+   *
+   * @param  {Object} req  Request Object
+   * @param  {Object} res  Response Object
+   * @param  {Object} next
+   * @returns {Object} Response Object
+   */
   validator(req, res, next) {
     db.Users.findById(req.decoded.id)
     .then((user) => {
@@ -95,6 +79,12 @@ const Authentication = {
           }
         });
     });
+  },
+  checkId(req, res, next) {
+    if (req.body.id) {
+      return res.status(403).send({ message: 'You must not pass in "id"' });
+    }
+    next();
   }
 };
 

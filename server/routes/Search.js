@@ -6,6 +6,6 @@ const router = express.Router();
 
 // Search Documents
 router.get('/documents', Authentication.verifyToken,
-  Authentication.validator, DocumentsController.searchDocuments);
+Authentication.validator, DocumentsController.searchDocuments);
 
 export default router;

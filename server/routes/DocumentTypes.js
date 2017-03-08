@@ -5,15 +5,15 @@ import DocumentTypesController from '../controllers/DocumentTypes';
 const router = express.Router();
 
 router.route('/')
-.get(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DocumentTypesController.fetchAll)
-.post(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DocumentTypesController.create);
+.get(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, DocumentTypesController.fetchAll)
+.post(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, DocumentTypesController.create);
 
 router.route('/:id')
-.put(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DocumentTypesController.edit)
-.delete(Authentication.verifyToken, Authentication.verifySuperAdmin,
-  DocumentTypesController.destroy);
+.put(Authentication.verifyToken, Authentication.checkId,
+  Authentication.verifySuperAdmin, DocumentTypesController.edit)
+.delete(Authentication.verifyToken,
+  Authentication.verifySuperAdmin, DocumentTypesController.destroy);
 
 export default router;

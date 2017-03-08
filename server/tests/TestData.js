@@ -52,7 +52,6 @@ const data = {
     lastname: 'david',
     email: 'simisola@david.com',
     password: 'simidavids',
-    roleId: 3,
     departmentId: 2
   },
   regularUser1edit: {
@@ -61,7 +60,6 @@ const data = {
     lastname: 'david',
     email: 'simisola@david.com',
     password: 'simidavidsmodified',
-    roleId: 3,
     departmentId: 2
   },
   regularUser1Admin: {
@@ -79,7 +77,6 @@ const data = {
     lastname: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    roleId: 3,
     departmentId: 3
   },
   superAdminUser2: {
@@ -97,7 +94,6 @@ const data = {
     lastname: 'lastname',
     email: 'email@email.com',
     password: 'password',
-    roleId: 3,
     departmentId: 2
   },
   regularUser4Edit: {
@@ -106,7 +102,6 @@ const data = {
     lastname: 'lastname',
     email: 'email@email.com',
     password: 'passwordModified',
-    roleId: 3,
     departmentId: 2
   },
   regularUser5: {
@@ -115,7 +110,6 @@ const data = {
     lastname: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    roleId: 3,
     departmentId: 3
   },
   invalidUser: {
@@ -124,7 +118,15 @@ const data = {
     lastname: faker.name.lastName(),
     email: 'a@a.com',
     password: faker.internet.password(),
-    roleId: 3,
+    departmentId: 4
+  },
+  noIdUser: {
+    id: 5,
+    username: null,
+    firstname: faker.name.firstName(),
+    lastname: faker.name.lastName(),
+    email: 'a@a.com',
+    password: faker.internet.password(),
     departmentId: 4
   },
   publicDocument4: {
