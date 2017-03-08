@@ -72,23 +72,13 @@ describe('User Tests', () => {
         done();
       });
     });
-    it('should check that no one can create department admin user', (done) => {
+    it('should check that no one can specify a role', (done) => {
       request.post('/users')
       .send(testData.departmentAdminUser2)
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You are not allowed to create an Admin user');
-        done();
-      });
-    });
-    it('should check that no one can create super admin', (done) => {
-      request.post('/users')
-      .send(testData.superAdminUser2)
-      .end((err, res) => {
-        expect(res.status).to.equal(403);
-        expect(res.body.message)
-        .to.equal('You are not allowed to create an Admin user');
+        .to.equal('You are not allowed to specify a role');
         done();
       });
     });
@@ -298,14 +288,14 @@ describe('User Tests', () => {
         done();
       });
     });
-    it('should check that user cannot assign admin permissions', (done) => {
+    it('should check that non SuperAdmins can change role', (done) => {
       request.put('/users/3')
       .set({ 'x-access-token': userOneToken })
       .send(testData.regularUser1Admin)
       .end((err, res) => {
         expect(res.status).to.equal(403);
         expect(res.body.message)
-        .to.equal('You cannot assign yourself Admin rights');
+        .to.equal('You cannot edit your role');
         done();
       });
     });
