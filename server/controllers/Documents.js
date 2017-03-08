@@ -289,7 +289,10 @@ const DocumentsController = {
    * @returns {Response} response object
    */
   searchDocuments(req, res) {
-    const searchQuery = req.query.query;
+    let searchQuery = req.query.query;
+    if (searchQuery) {
+      searchQuery = searchQuery.replace(/[^\w\s]+/g, '');
+    }
     let dbQuery;
     let personal = {};
     const whereCondition = {
@@ -318,22 +321,24 @@ const DocumentsController = {
           where: { departmentId: req.decoded.departmentId }
         }]
       };
+    } else {
+      db.Documents.findAll({ where: { userId: req.decoded.id } })
+      .then((docs) => {
+        personal = docs;
+      });
+
+      dbQuery = {
+        where: whereCondition,
+        include: [{
+          model: db.AccessTypes,
+          where: { name: { $ne: 'private' } },
+        },
+        {
+          model: db.Users,
+          where: { departmentId: req.decoded.departmentId }
+        }]
+      };
     }
-    db.Documents.findAll({ where: { userId: req.decoded.id } })
-    .then((docs) => {
-      personal = docs;
-    });
-    dbQuery = {
-      where: whereCondition,
-      include: [{
-        model: db.AccessTypes,
-        where: { name: { $ne: 'private' } },
-      },
-      {
-        model: db.Users,
-        where: { departmentId: req.decoded.departmentId }
-      }]
-    };
     db.Documents.findAll(dbQuery)
     .then((documents) => {
       if (!documents.length) {
