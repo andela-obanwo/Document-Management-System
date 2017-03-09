@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import db from '../models';
+import Paginator from '../helpers/Pagination';
 
 const secret = process.env.SECRET_TOKEN || 'gibberish is the way to go';
 const userAttributes = [
@@ -34,33 +35,65 @@ const UsersController = {
    * @returns {Response} response object
    */
   fetchAll(req, res) {
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.attributes = userAttributes;
     if (req.adminType === 'superAdmin') {
-      return db.Users.findAll({
-        attributes: userAttributes
-      }).then(users => res.status(200).send({
-        data: users,
-        message: 'All user data returned'
-      }));
+      return db.Users.findAndCountAll(query)
+      .then((users) => {
+        const metaData = {
+          count: users.count,
+          limit: query.limit,
+          offset: query.offset
+        };
+        delete users.count;
+        const pageData = Paginator.paginate(metaData);
+        res.status(200).send({
+          data: users,
+          pageData,
+          message: 'All user data returned'
+        });
+      });
     } else if (req.adminType === 'departmentAdmin') {
-      return db.Users.findAll({
-        attributes: userAttributes,
-        where: { departmentId: req.decoded.departmentId }
-      }).then(users => res.status(200).send({
-        data: users,
-        message: 'Departmental user data returned'
-      }));
+      query.where = { departmentId: req.decoded.departmentId };
+      return db.Users.findAndCountAll(query)
+      .then((users) => {
+        const metaData = {
+          count: users.count,
+          limit: query.limit,
+          offset: query.offset
+        };
+        delete users.count;
+        const pageData = Paginator.paginate(metaData);
+        res.status(200).send({
+          data: users,
+          pageData,
+          message: 'Departmental user data returned'
+        });
+      });
     }
-    return db.Users.findAll({
-      attributes: [
-        'id',
-        'firstname',
-        'lastname'
-      ],
-      where: { departmentId: req.decoded.departmentId }
-    }).then(users => res.status(200).send({
-      data: users,
-      message: 'Minimal Departmental user data returned'
-    }));
+    query.where = { departmentId: req.decoded.departmentId };
+    query.attributes = [
+      'id',
+      'firstname',
+      'lastname'
+    ];
+    return db.Users.findAndCountAll(query)
+    .then((users) => {
+      const metaData = {
+        count: users.count,
+        limit: query.limit,
+        offset: query.offset
+      };
+      delete users.count;
+      const pageData = Paginator.paginate(metaData);
+      res.status(200).send({
+        data: users,
+        pageData,
+        message: 'Minimal Departmental user data returned'
+      });
+    });
   },
 
   /**

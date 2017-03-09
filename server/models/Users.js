@@ -50,6 +50,7 @@ export default (sequelize, DataTypes) => {
         });
 
         Users.hasMany(models.Documents, {
+          as: 'documents',
           foreignKey: 'userId',
           onDelete: 'CASCADE'
         });

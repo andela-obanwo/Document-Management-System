@@ -1,4 +1,5 @@
 import db from '../models';
+import Paginator from '../helpers/Pagination';
 
 const AccessTypesController = {
   /**
@@ -9,15 +10,25 @@ const AccessTypesController = {
    * @returns {Response} response object
    */
   fetchAll(req, res) {
-    db.AccessTypes.findAll({
-      attributes: [
-        'id',
-        'name',
-        'createdAt',
-        'updatedAt'
-      ]
-    }).then((accessTypes) => {
-      res.status(200).send(accessTypes);
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.attributes = [
+      'id',
+      'name',
+      'createdAt',
+      'updatedAt'
+    ];
+    db.AccessTypes.findAndCountAll(query)
+    .then((accesstypes) => {
+      const metaData = {
+        count: accesstypes.count,
+        limit: query.limit,
+        offset: query.offset
+      };
+      delete accesstypes.count;
+      const pageData = Paginator.paginate(metaData);
+      res.status(200).send({ accesstypes, pageData });
     });
   },
 

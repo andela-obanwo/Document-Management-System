@@ -3,6 +3,7 @@ import Request from 'supertest';
 import app from '../app';
 import testData from './TestData';
 import db from '../models';
+import Sanitize from '../helpers/Sanitize';
 
 const request = Request.agent(app);
 const expect = chai.expect;
@@ -10,7 +11,6 @@ const superAdmin = testData.superAdminUser;
 const departmentAdmin = testData.departmentAdminUser1;
 const userOne = testData.regularUser1;
 const userTwo = testData.regularUser2;
-
 
 let superAdminToken, departmentAdminToken, userOneToken, userTwoToken;
 describe('Document Tests', () => {
@@ -98,6 +98,16 @@ describe('Document Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(201);
         expect(res.body.message).to.equal('Document Created Successfully');
+        done();
+      });
+    });
+    it('should verify that user can not create duplicate documents', (done) => {
+      request.post('/documents')
+      .set({ 'x-access-token': userOneToken })
+      .send(testData.privateDocument4)
+      .end((err, res) => {
+        expect(res.status).to.equal(409);
+        expect(res.body.message).to.equal('Document already exists');
         done();
       });
     });
@@ -422,7 +432,7 @@ describe('Document Tests', () => {
       });
     });
     it('should find a document match for search query', (done) => {
-      request.get('/search/documents?query=a')
+      request.get('/search/documents?query=forever')
       .set({ 'x-access-token': departmentAdminToken })
       .end((err, res) => {
         expect(res.status).to.equal(200);
@@ -435,6 +445,30 @@ describe('Document Tests', () => {
       .end((err, res) => {
         expect(res.status).to.equal(200);
         expect(res.body.message).to.equal('No Documents matching search found');
+        done();
+      });
+    });
+    it('should strip non-alphanumeric characters and search', (done) => {
+      request.get('/search/documents?query=for@\'*%27)(ever')
+      .set({ 'x-access-token': userTwoToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
+    it('should strip test sanitize method', () => {
+      expect(Sanitize.searchString({
+        query: {
+          query: 'for@\'*%27)(ever%zz'
+        }
+      })).to.equal('foreverzz');
+    });
+    it('should test for empty query', (done) => {
+      request.get('/search/documents?query=')
+      .set({ 'x-access-token': userTwoToken })
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('Invalid search query');
         done();
       });
     });

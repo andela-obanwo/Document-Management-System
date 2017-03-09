@@ -1,4 +1,5 @@
 import db from '../models';
+import Paginator from '../helpers/Pagination';
 
 const DocumentTypesController = {
   /**
@@ -9,15 +10,25 @@ const DocumentTypesController = {
    * @returns {Response} response object
    */
   fetchAll(req, res) {
-    db.DocumentTypes.findAll({
-      attributes: [
-        'id',
-        'name',
-        'createdAt',
-        'updatedAt'
-      ]
-    }).then((documenttypes) => {
-      res.send(documenttypes);
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.attributes = [
+      'id',
+      'name',
+      'createdAt',
+      'updatedAt'
+    ];
+    db.DocumentTypes.findAndCountAll(query)
+    .then((documenttypes) => {
+      const metaData = {
+        count: documenttypes.count,
+        limit: query.limit,
+        offset: query.offset
+      };
+      delete documenttypes.count;
+      const pageData = Paginator.paginate(metaData);
+      res.status(200).send({ documenttypes, pageData });
     });
   },
 
