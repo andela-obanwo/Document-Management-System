@@ -1,4 +1,6 @@
 import db from '../models';
+import Sanitize from '../helpers/Sanitize';
+import Paginator from '../helpers/Pagination';
 
 const DocumentsController = {
   /**
@@ -9,11 +11,22 @@ const DocumentsController = {
    * @returns {Response} response object
    */
   fetchAll(req, res) {
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
     if (req.adminType === 'superAdmin') {
-      return db.Documents.findAll({
-      }).then((documents) => {
+      return db.Documents.findAndCountAll(query)
+      .then((documents) => {
+        const metaData = {
+          count: documents.count,
+          limit: query.limit,
+          offset: query.offset
+        };
+        delete documents.count;
+        const pageData = Paginator.paginate(metaData);
         res.status(200).send({
           data: documents,
+          pageData,
           message: 'All documents returned Successfully'
         });
       });
@@ -31,28 +44,28 @@ const DocumentsController = {
         });
       });
     }
-    return db.Documents.findAll({
-      include: [{
-        model: db.AccessTypes,
-        where: { name: 'public' }
-      },
-      {
-        model: db.Users,
-        where: { departmentId: req.decoded.departmentId }
-      }]
+    const dbQuery = `SELECT "Documents".* FROM "Documents"
+      INNER JOIN "AccessTypes"
+        ON "AccessTypes"."id" = "Documents"."accessTypeId"
+      INNER JOIN "Users"
+        ON "Users"."id" = "Documents"."userId"
+      INNER JOIN "Departments"
+        ON "Departments"."id" = "Users"."departmentId"
+      WHERE
+        (("AccessTypes".name = 'public'
+          AND "Departments"."id" = ${req.decoded.departmentId})
+        OR "Users".id = ${req.decoded.id})
+        OFFSET ${query.offset} LIMIT ${query.limit};`;
+
+    return db.sequelize.query(dbQuery, {
+      type: db.sequelize.QueryTypes.SELECT
     })
-    .then(documents =>
-      db.Documents.findAll({
-        where: {
-          userId: req.decoded.id
-        }
-      })
-      .then((personalDocs) => {
-        res.status(200).send({
-          data: { public: documents, personal: personalDocs },
-          message: 'Public Documents for your department returned'
-        });
-      }));
+    .then((personalDocs) => {
+      res.status(200).send({
+        data: personalDocs,
+        message: 'Public Documents for your department returned'
+      });
+    });
   },
 
   /**
@@ -63,16 +76,28 @@ const DocumentsController = {
    * @returns {Response} response object
    */
   create(req, res) {
-    req.body.userId = req.decoded.id;
-    db.Documents.create(req.body)
-    .then((document) => {
-      res.status(201).send({
-        data: document,
-        message: 'Document Created Successfully'
-      });
+    db.Documents.find({
+      where: {
+        userId: req.decoded.id,
+        title: req.body.title,
+        content: req.body.content
+      }
     })
-    .catch((err) => {
-      res.status(400).send(err);
+    .then((document) => {
+      if (document) {
+        return res.status(409).send({ message: 'Document already exists' });
+      }
+      req.body.userId = req.decoded.id;
+      db.Documents.create(req.body)
+       .then((createdDoc) => {
+         res.status(201).send({
+           data: createdDoc,
+           message: 'Document Created Successfully'
+         });
+       })
+      .catch((err) => {
+        res.status(400).send(err);
+      });
     });
   },
 
@@ -259,6 +284,7 @@ const DocumentsController = {
         },
         include: [{
           model: db.Documents,
+          as: 'documents',
           where: { userId: req.params.id }
         }]
       };
@@ -271,6 +297,7 @@ const DocumentsController = {
         },
         include: [{
           model: db.Documents,
+          as: 'documents',
           where: { userId: req.params.id }
         }]
       };
@@ -289,12 +316,31 @@ const DocumentsController = {
    * @returns {Response} response object
    */
   searchDocuments(req, res) {
-    let searchQuery = req.query.query;
-    if (searchQuery) {
-      searchQuery = searchQuery.replace(/[^\w\s]+/g, '');
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+
+    if (!Object.keys(req.query).length || !req.query.query) {
+      return res.status(400).send({ message: 'Invalid search query' });
     }
+    const results = (documents) => {
+      const metaData = {
+        count: documents.count,
+        limit: query.limit,
+        offset: query.offset
+      };
+      delete documents.count;
+      const pageData = Paginator.paginate(metaData);
+      if (documents.length) {
+        return res.status(200).send({ documents, pageData });
+      } else if (documents.rows.length) {
+        return res.status(200).send({ documents, pageData });
+      }
+      return res.status(200)
+        .send({ message: 'No Documents matching search found' });
+    };
+    const searchQuery = Sanitize.searchString(req, res);
     let dbQuery;
-    let personal = {};
     const whereCondition = {
       $or: [
         {
@@ -322,32 +368,38 @@ const DocumentsController = {
         }]
       };
     } else {
-      db.Documents.findAll({ where: { userId: req.decoded.id } })
-      .then((docs) => {
-        personal = docs;
-      });
+      dbQuery = `SELECT "Documents".* FROM "Documents"
+      INNER JOIN "AccessTypes"
+        ON "AccessTypes"."id" = "Documents"."accessTypeId"
+      INNER JOIN "Users"
+        ON "Users"."id" = "Documents"."userId"
+      INNER JOIN "Departments"
+        ON "Departments"."id" = "Users"."departmentId"
+      WHERE
+        (("AccessTypes".name != 'private'
+          AND "Departments"."id" = ${req.decoded.departmentId})
+        OR "Users".id = ${req.decoded.id})
+          AND ("Documents"."title" ILIKE '%${searchQuery}%'
+            OR "Documents"."content" ILIKE '%${searchQuery}%')
+            OFFSET ${query.offset} LIMIT ${query.limit};`;
 
-      dbQuery = {
-        where: whereCondition,
-        include: [{
-          model: db.AccessTypes,
-          where: { name: { $ne: 'private' } },
-        },
-        {
-          model: db.Users,
-          where: { departmentId: req.decoded.departmentId }
-        }]
-      };
+      return db.sequelize.query(dbQuery, {
+        type: db.sequelize.QueryTypes.SELECT
+      })
+      .then((documents) => {
+        if (!documents.length) {
+          return results({ rows: [] });
+        }
+        documents.count = documents.length;
+        return results(documents);
+      });
     }
-    db.Documents.findAll(dbQuery)
+    dbQuery.offset = query.offset;
+    dbQuery.limit = query.limit;
+
+    db.Documents.findAndCountAll(dbQuery)
     .then((documents) => {
-      if (!documents.length) {
-        return res.status(200)
-        .send({ message: 'No Documents matching search found' });
-      } else if (req.adminType === 'user') {
-        return res.status(200).send({ main: documents, own: personal });
-      }
-      return res.status(200).send(documents);
+      results(documents);
     });
   }
 };

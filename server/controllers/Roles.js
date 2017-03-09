@@ -1,4 +1,5 @@
 import db from '../models';
+import Paginator from '../helpers/Pagination';
 
 const RolesController = {
   /**
@@ -9,15 +10,25 @@ const RolesController = {
    * @returns {Response} response object
    */
   fetchAll(req, res) {
-    db.Roles.findAll({
-      attributes: [
-        'id',
-        'name',
-        'createdAt',
-        'updatedAt'
-      ]
-    }).then((roles) => {
-      res.status(200).send(roles);
+    const query = {};
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.attributes = [
+      'id',
+      'name',
+      'createdAt',
+      'updatedAt'
+    ];
+    db.Roles.findAndCountAll(query)
+    .then((roles) => {
+      const metaData = {
+        count: roles.count,
+        limit: query.limit,
+        offset: query.offset
+      };
+      delete roles.count;
+      const pageData = Paginator.paginate(metaData);
+      res.status(200).send({ roles, pageData });
     });
   },
 

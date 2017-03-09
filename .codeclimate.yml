@@ -8,7 +8,7 @@ engines:
       indent:
         enabled: false
   duplication:
-    enabled: true
+    enabled: false
     checks:
       Similar code:
         enabled: false
